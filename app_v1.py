@@ -12,7 +12,7 @@ page_bg_img = '''
 .stApp {
     background-image: url("https://burst.shopifycdn.com/photos/flatlay-iron-skillet-with-meat-and-other-food.jpg?width=925&format=pjpg&exif=0&iptc=0");
     background-size: cover;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat; 
     background-attachment: fixed;
 }
 body {
