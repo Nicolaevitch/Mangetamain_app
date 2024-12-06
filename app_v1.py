@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+from recipe_app import RecipeApp  # Importer RecipeApp
 
 # Charger les datasets avec l'option low_memory=False
 merged_clean_df = pd.read_csv('base_light_V3.csv', low_memory=False)
@@ -125,4 +126,7 @@ elif menu == "Idée recette !":
     # Titre de la page
     st.title("Idée recette !")
     st.write("Ici, vous pouvez explorer de nouvelles idées de recettes.")
-    # Ajouter d'autres fonctionnalités pour cette page si nécessaire
+
+    # Instancier et exécuter RecipeApp
+    app = RecipeApp()
+    app.run()
