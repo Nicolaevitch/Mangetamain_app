@@ -15,7 +15,7 @@ class RecipeApp:
     @st.cache_data
     def load_main_data():
         """Charge les données principales depuis base_light_V3."""
-        return pd.read_csv('base_light_V3', usecols=['id', 'name', 'average_rating', 'contributor_id'])
+        return pd.read_csv('base_light_V3.csv', low_memory=False, usecols=['id', 'name', 'average_rating', 'contributor_id'])
 
     def get_ingredients_by_ids(self, recipe_ids):
         """Récupère les ingrédients pour une liste d'IDs de recette depuis les fichiers spécifiques."""
