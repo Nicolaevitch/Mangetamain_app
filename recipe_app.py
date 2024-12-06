@@ -1,6 +1,9 @@
 import pandas as pd
 import streamlit as st
 
+import pandas as pd
+import streamlit as st
+
 class RecipeApp:
     def __init__(self):
         # Chemins vers les fichiers
@@ -15,7 +18,7 @@ class RecipeApp:
     @st.cache_data
     def load_main_data():
         """Charge les données principales depuis base_light_V3."""
-        return pd.read_csv('base_light_V3.csv', low_memory=False, usecols=['id', 'name', 'average_rating', 'contributor_id'])
+        return pd.read_csv('base_light_V3.csv', usecols=['id', 'name', 'contributor_id'])
 
     def get_ingredients_by_ids(self, recipe_ids):
         """Récupère les ingrédients pour une liste d'IDs de recette depuis les fichiers spécifiques."""
@@ -36,6 +39,7 @@ class RecipeApp:
 
     def display_recipe_by_id(self, recipe_id):
         """Affiche une recette spécifique par ID."""
+        # Rechercher la recette par ID dans le fichier principal
         recipe = self.recipes_clean[self.recipes_clean['id'] == recipe_id]
         if recipe.empty:
             st.error(f"Aucune recette trouvée avec l'ID {recipe_id}.")
@@ -46,8 +50,8 @@ class RecipeApp:
         recipe_row = recipe.iloc[0]
         ingredients_row = ingredients[ingredients['id'] == recipe_id]
 
+        # Affichage des détails
         st.subheader(f"Recette : {recipe_row['name']}")
-        st.write(f"**Note Moyenne**: {recipe_row['average_rating']}")
         st.write(f"**Contributeur**: {recipe_row['contributor_id']}")
         st.write(f"**Ingrédients**: {', '.join(ingredients_row['ingredients'].iloc[0]) if not ingredients_row.empty else 'Ingrédients non trouvés.'}")
 
