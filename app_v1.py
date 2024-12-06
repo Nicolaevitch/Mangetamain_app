@@ -16,10 +16,10 @@ page_bg_img = '''
     background-attachment: fixed;
 }
 body {
-    color: #f5deb3; /* Change tout le texte au centre en beige */
+    color: #d2b48c; /* Change tout le texte au centre en marron clair */
 }
 h1, h2, h3, h4, h5, h6 {
-    color: #f5deb3; /* Change aussi la couleur des titres */
+    color: #d2b48c; /* Change aussi la couleur des titres */
 }
 </style>
 '''
