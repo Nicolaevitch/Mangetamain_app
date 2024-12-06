@@ -20,7 +20,7 @@ if user_id:
         top_recipes = filtered_data.sort_values(by='average_rating', ascending=False).head(10)
 
         # Sélectionner les colonnes demandées
-        top_recipes = top_recipes[['name', 'average_rating', 'minutes', 'n_ingredients']]
+        top_recipes = top_recipes[['name', 'average_rating', 'minutes']]
         
         # Afficher les résultats
         st.subheader("Top 10 des meilleures recettes")
