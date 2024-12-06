@@ -21,12 +21,30 @@ body {
 h1, h2, h3, h4, h5, h6 {
     color: #8B4513; /* Change aussi la couleur des titres */
 }
+.sidebar .block-container h1, .sidebar .block-container h2, .sidebar .block-container h3, .sidebar .block-container h4 {
+    font-size: larger; /* Augmente la taille des textes dans la barre latérale */
+}
 </style>
 '''
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
+# Style pour agrandir et personnaliser le texte du menu
+menu_style = '''
+<style>
+    .sidebar .block-container label {
+        font-weight: bold;
+        font-style: italic;
+        font-size: large; /* Augmente la taille du texte Menu */
+    }
+    .sidebar .block-container .radio {
+        font-size: larger; /* Augmente la taille des options Accueil et Idée recette */
+    }
+</style>
+'''
+st.markdown(menu_style, unsafe_allow_html=True)
+
 # Créer le menu pour changer de page
-menu = st.sidebar.radio("Navigation", ["Accueil", "Idée recette !"], index=0)
+menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !"], index=0)
 
 if menu == "Accueil":
     # Titre de l'application
