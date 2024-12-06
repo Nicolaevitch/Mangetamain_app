@@ -33,16 +33,16 @@ filtered_df = merged_clean_df[
 ]
 
 # Champ d'entrée pour le contributor_id
-user_id = st.text_input("Entrez un contributor_id :", "")
+contributor_id = st.text_input("Entrez un contributor_id :", "")
 
 # Vérifier si un contributor_id est saisi
-if user_id:
+if contributor_id:
     try:
-        # Convertir l'ID en entier
-        user_id = int(user_id)
+        # Convertir le contributor_id en entier
+        contributor_id = int(contributor_id)
         
         # Filtrer les données pour le contributor_id
-        filtered_data = filtered_df[filtered_df['contributor_id'] == user_id]
+        filtered_data = filtered_df[filtered_df['contributor_id'] == contributor_id]
         
         if not filtered_data.empty:
             # Calculer le total des recettes pour ce contributor_id
@@ -53,11 +53,11 @@ if user_id:
             top_recipes = top_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']]
             
             # Afficher les statistiques du contributor
-            st.subheader(f"Statistiques pour le contributor avec l'ID {user_id}")
+            st.subheader(f"Statistiques pour le contributor avec l'ID {contributor_id}")
             st.write(f"**Total de recettes publiées :** {total_recipes}")
 
             # Afficher les meilleures recettes du contributor
-            st.subheader(f"Top 10 des meilleures recettes pour le contributor_id {user_id}")
+            st.subheader(f"Top 10 des meilleures recettes pour le contributor_id {contributor_id}")
             st.dataframe(top_recipes)
         else:
             st.warning("Aucune recette trouvée pour ce contributor_id.")
@@ -67,6 +67,6 @@ else:
     st.info("Veuillez entrer un contributor_id pour afficher les résultats.")
 
 # Afficher les données filtrées avec les filtres interactifs
-if not user_id:
+if not contributor_id:
     st.subheader("Recettes filtrées selon vos critères")
     st.dataframe(filtered_df[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']].head(10))
