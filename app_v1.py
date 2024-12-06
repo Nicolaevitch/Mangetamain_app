@@ -4,11 +4,11 @@ import streamlit as st
 # Charger le dataset
 merged_clean_df = pd.read_csv('base_light_V3.csv')
 
-# Ajouter un fond d'écran (image1)
+# Ajouter un fond d'écran (image à partir de l'URL)
 page_bg_img = '''
 <style>
 .stApp {
-    background-image: url("image1");
+    background-image: url("https://burst.shopifycdn.com/photos/flatlay-iron-skillet-with-meat-and-other-food.jpg?width=925&format=pjpg&exif=0&iptc=0");
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
