@@ -45,41 +45,35 @@ filtered_df = merged_clean_df[
     (merged_clean_df['steps_category'].isin(selected_steps_category))
 ]
 
-# Champ d'entrée pour le contributor_id
-contributor_id = st.text_input("Entrez un contributor_id :", "")
+# Menu déroulant pour sélectionner un contributor_id
+unique_contributor_ids = sorted(filtered_df['contributor_id'].unique())
+contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
 
-# Vérifier si un contributor_id est saisi
+# Vérifier si un contributor_id est sélectionné
 if contributor_id:
-    try:
-        # Convertir le contributor_id en entier
-        contributor_id = int(contributor_id)
-        
-        # Filtrer les données pour le contributor_id
-        filtered_data = filtered_df[filtered_df['contributor_id'] == contributor_id]
-        
-        if not filtered_data.empty:
-            # Calculer le total des recettes pour ce contributor_id
-            total_recipes = filtered_data.shape[0]
+    # Filtrer les données pour le contributor_id
+    filtered_data = filtered_df[filtered_df['contributor_id'] == contributor_id]
+    
+    if not filtered_data.empty:
+        # Calculer le total des recettes pour ce contributor_id
+        total_recipes = filtered_data.shape[0]
 
-            # Trier par les meilleures notes et sélectionner les colonnes importantes
-            top_recipes = filtered_data.sort_values(by='average_rating', ascending=False).head(10)
-            top_recipes = top_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']]
-            
-            # Afficher les statistiques du contributor
-            st.subheader(f"Statistiques pour le contributor avec l'ID {contributor_id}")
-            st.write(f"**Total de recettes publiées :** {total_recipes}")
+        # Trier par les meilleures notes et sélectionner les colonnes importantes
+        top_recipes = filtered_data.sort_values(by='average_rating', ascending=False).head(10)
+        top_recipes = top_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']]
+        
+        # Afficher les statistiques du contributor
+        st.subheader(f"Statistiques pour le contributor avec l'ID {contributor_id}")
+        st.write(f"**Total de recettes publiées :** {total_recipes}")
 
-            # Afficher les meilleures recettes du contributor
-            st.subheader(f"Top 10 des meilleures recettes pour le contributor_id {contributor_id}")
-            st.dataframe(top_recipes)
-        else:
-            st.warning("Aucune recette trouvée pour ce contributor_id.")
-    except ValueError:
-        st.error("Veuillez entrer un contributor_id valide.")
+        # Afficher les meilleures recettes du contributor
+        st.subheader(f"Top 10 des meilleures recettes pour le contributor_id {contributor_id}")
+        st.dataframe(top_recipes)
+    else:
+        st.warning("Aucune recette trouvée pour ce contributor_id.")
 else:
-    st.info("Veuillez entrer un contributor_id pour afficher les résultats.")
+    st.info("Veuillez sélectionner un contributor_id pour afficher les résultats.")
 
 # Afficher les données filtrées avec les filtres interactifs
-if not contributor_id:
-    st.subheader("Recettes filtrées selon vos critères")
-    st.dataframe(filtered_df[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']].head(10))
+st.subheader("Recettes filtrées selon vos critères")
+st.dataframe(filtered_df[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']].head(10))
