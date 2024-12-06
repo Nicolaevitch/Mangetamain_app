@@ -71,8 +71,6 @@ if contributor_id:
         st.dataframe(top_recipes)
     else:
         st.warning("Aucune recette trouvée pour ce contributor_id.")
-else:
-    st.info("Veuillez sélectionner un contributor_id pour afficher les résultats.")
 
 # Afficher les données filtrées avec les filtres interactifs
 st.subheader("Recettes filtrées selon vos critères")
