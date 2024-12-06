@@ -25,66 +25,77 @@ h1, h2, h3, h4, h5, h6 {
 '''
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# Titre de l'application
-st.title("Recherche des meilleures recettes")
+# Créer le menu pour changer de page
+menu = st.sidebar.radio("Navigation", ["Accueil", "Idée recette !"], index=0)
 
-# Afficher un top 10 des recettes avec le meilleur score average_rating
-st.subheader("Top 10 des recettes avec le meilleur score")
-top_10_recipes = merged_clean_df.sort_values(by='average_rating', ascending=False).head(10)
-st.dataframe(top_10_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']])
+if menu == "Accueil":
+    # Titre de l'application
+    st.title("Recherche des meilleures recettes")
 
-# Ajout de filtres interactifs
-st.sidebar.header("Filtres")
-selected_palmares = st.sidebar.multiselect(
-    "Filtrer par palmarès",
-    options=merged_clean_df['palmarès'].unique(),
-    default=merged_clean_df['palmarès'].unique()
-)
+    # Afficher un top 10 des recettes avec le meilleur score average_rating
+    st.subheader("Top 10 des recettes avec le meilleur score")
+    top_10_recipes = merged_clean_df.sort_values(by='average_rating', ascending=False).head(10)
+    st.dataframe(top_10_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']])
 
-selected_steps_category = st.sidebar.multiselect(
-    "Filtrer par catégorie de steps",
-    options=merged_clean_df['steps_category'].unique(),
-    default=merged_clean_df['steps_category'].unique()
-)
+    # Ajout de filtres interactifs (placés à droite)
+    with st.sidebar:
+        st.header("Filtres")
+        selected_palmares = st.multiselect(
+            "Filtrer par palmarès",
+            options=merged_clean_df['palmarès'].unique(),
+            default=merged_clean_df['palmarès'].unique()
+        )
 
-# Appliquer les filtres
-filtered_df = merged_clean_df[
-    (merged_clean_df['palmarès'].isin(selected_palmares)) &
-    (merged_clean_df['steps_category'].isin(selected_steps_category))
-]
+        selected_steps_category = st.multiselect(
+            "Filtrer par catégorie de steps",
+            options=merged_clean_df['steps_category'].unique(),
+            default=merged_clean_df['steps_category'].unique()
+        )
 
-# Menu déroulant pour sélectionner un contributor_id
-unique_contributor_ids = sorted(filtered_df['contributor_id'].unique())
-contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
+    # Appliquer les filtres
+    filtered_df = merged_clean_df[
+        (merged_clean_df['palmarès'].isin(selected_palmares)) &
+        (merged_clean_df['steps_category'].isin(selected_steps_category))
+    ]
 
-# Vérifier si un contributor_id est sélectionné
-if contributor_id:
-    # Filtrer les données pour le contributor_id
-    contributor_recipes = filtered_df[filtered_df['contributor_id'] == contributor_id]
+    # Menu déroulant pour sélectionner un contributor_id
+    unique_contributor_ids = sorted(filtered_df['contributor_id'].unique())
+    contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
 
-    if not contributor_recipes.empty:
-        # Limiter à 20 recettes maximum
-        top_20_ids = contributor_recipes['id'].head(20)
+    # Vérifier si un contributor_id est sélectionné
+    if contributor_id:
+        # Filtrer les données pour le contributor_id
+        contributor_recipes = filtered_df[filtered_df['contributor_id'] == contributor_id]
 
-        # Filtrer les fichiers d'ingrédients pour les IDs sélectionnés
-        relevant_ingredients_part1 = ingredients_part1[ingredients_part1['id'].isin(top_20_ids)]
-        relevant_ingredients_part2 = ingredients_part2[ingredients_part2['id'].isin(top_20_ids)]
+        if not contributor_recipes.empty:
+            # Limiter à 20 recettes maximum
+            top_20_ids = contributor_recipes['id'].head(20)
 
-        # Fusionner les deux datasets d'ingrédients
-        ingredients_combined = pd.concat([relevant_ingredients_part1, relevant_ingredients_part2])
+            # Filtrer les fichiers d'ingrédients pour les IDs sélectionnés
+            relevant_ingredients_part1 = ingredients_part1[ingredients_part1['id'].isin(top_20_ids)]
+            relevant_ingredients_part2 = ingredients_part2[ingredients_part2['id'].isin(top_20_ids)]
 
-        # Fusionner avec les données principales
-        merged_data = pd.merge(contributor_recipes, ingredients_combined, on='id', how='inner')
+            # Fusionner les deux datasets d'ingrédients
+            ingredients_combined = pd.concat([relevant_ingredients_part1, relevant_ingredients_part2])
 
-        # Sélectionner les colonnes importantes
-        display_data = merged_data[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category', 'ingredients']].head(20)
+            # Fusionner avec les données principales
+            merged_data = pd.merge(contributor_recipes, ingredients_combined, on='id', how='inner')
 
-        # Afficher les données
-        st.subheader(f"Recettes pour le contributor_id {contributor_id} (max 20 recettes)")
-        st.dataframe(display_data)
-    else:
-        st.warning("Aucune recette trouvée pour ce contributor_id.")
+            # Sélectionner les colonnes importantes
+            display_data = merged_data[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category', 'ingredients']].head(20)
 
-# Afficher les données filtrées avec les filtres interactifs
-st.subheader("Recettes filtrées selon vos critères")
-st.dataframe(filtered_df[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']].head(10))
+            # Afficher les données
+            st.subheader(f"Recettes pour le contributor_id {contributor_id} (max 20 recettes)")
+            st.dataframe(display_data)
+        else:
+            st.warning("Aucune recette trouvée pour ce contributor_id.")
+
+    # Afficher les données filtrées avec les filtres interactifs
+    st.subheader("Recettes filtrées selon vos critères")
+    st.dataframe(filtered_df[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']].head(10))
+
+elif menu == "Idée recette !":
+    # Titre de la page
+    st.title("Idée recette !")
+    st.write("Ici, vous pouvez explorer de nouvelles idées de recettes.")
+    # Ajouter d'autres fonctionnalités pour cette page si nécessaire
