@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from recipe_app import RecipeApp  # Importer RecipeApp
+from recipe_app import RecipeApp
 
 # Charger les datasets avec l'option low_memory=False
 merged_clean_df = pd.read_csv('base_light_V3.csv', low_memory=False)
