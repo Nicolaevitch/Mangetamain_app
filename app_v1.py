@@ -4,6 +4,19 @@ import streamlit as st
 # Charger le dataset
 merged_clean_df = pd.read_csv('base_light_V3.csv')
 
+# Ajouter un fond d'écran (image1)
+page_bg_img = '''
+<style>
+.stApp {
+    background-image: url("image1");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+</style>
+'''
+st.markdown(page_bg_img, unsafe_allow_html=True)
+
 # Titre de l'application
 st.title("Recherche des meilleures recettes")
 
@@ -28,7 +41,7 @@ selected_steps_category = st.sidebar.multiselect(
 
 # Appliquer les filtres
 filtered_df = merged_clean_df[
-    (merged_clean_df['palmarès'].isin(selected_palmares)) &
+    (merged_clean_df['palmarès'].isin(selected_palmares)) & 
     (merged_clean_df['steps_category'].isin(selected_steps_category))
 ]
 
