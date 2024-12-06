@@ -37,20 +37,30 @@ user_id = st.text_input("Entrez un ID :", "")
 
 # Vérifier si un ID est saisi
 if user_id:
-    filtered_data = filtered_df[filtered_df['id'] == int(user_id)]
-    
-    if not filtered_data.empty:
-        # Trier par les meilleures notes
-        top_recipes = filtered_data.sort_values(by='average_rating', ascending=False).head(10)
-
-        # Sélectionner les colonnes demandées
-        top_recipes = top_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']]
+    try:
+        user_id = int(user_id)
+        filtered_data = filtered_df[filtered_df['id'] == user_id]
         
-        # Afficher les résultats
-        st.subheader(f"Top 10 des meilleures recettes pour l'ID {user_id}")
-        st.dataframe(top_recipes)
-    else:
-        st.warning("Aucune recette trouvée pour cet ID.")
+        if not filtered_data.empty:
+            # Trier par les meilleures notes et limiter à 5 recettes max
+            top_recipes = filtered_data.sort_values(by='average_rating', ascending=False).head(5)
+
+            # Calculer le score moyen et le nombre de recettes
+            avg_score = filtered_data['average_rating'].mean()
+            total_recipes = filtered_data.shape[0]
+
+            # Afficher les informations
+            st.subheader(f"Statistiques pour l'utilisateur avec l'ID {user_id}")
+            st.write(f"**Score moyen des recettes :** {avg_score:.2f}")
+            st.write(f"**Nombre total de recettes :** {total_recipes}")
+
+            # Afficher les recettes de l'utilisateur
+            st.subheader(f"Top {min(5, total_recipes)} des recettes pour l'ID {user_id}")
+            st.dataframe(top_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']])
+        else:
+            st.warning("Aucune recette trouvée pour cet ID.")
+    except ValueError:
+        st.error("Veuillez entrer un ID valide.")
 else:
     st.info("Veuillez entrer un ID pour afficher les résultats.")
 
