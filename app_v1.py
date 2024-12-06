@@ -28,17 +28,26 @@ h1, h2, h3, h4, h5, h6 {
 '''
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# Style pour agrandir et personnaliser le texte du menu
+# Style pour personnaliser le menu et agrandir la flèche
 menu_style = '''
 <style>
-    .sidebar .block-container label {
-        font-weight: bold;
-        font-style: italic;
-        font-size: large; /* Augmente la taille du texte Menu */
-    }
-    .sidebar .block-container .radio {
-        font-size: larger; /* Augmente la taille des options Accueil et Idée recette */
-    }
+.sidebar .block-container label {
+    font-weight: bold;
+    font-style: italic;
+    font-size: large; /* Augmente la taille du texte Menu */
+}
+.sidebar .block-container .radio {
+    font-size: larger; /* Augmente la taille des options Accueil et Idée recette */
+}
+.css-1v0mbdj .stSelectbox div[role="combobox"] {
+    font-size: larger; /* Augmente la taille du texte dans le menu déroulant */
+}
+.css-1v0mbdj .stSelectbox div[role="combobox"]::after {
+    content: " ⬇️ Chercher ici"; /* Ajoute le texte "Chercher ici" avec une grande flèche */
+    font-size: larger;
+    font-weight: bold;
+    color: #8B4513; /* Marron pour correspondre au thème */
+}
 </style>
 '''
 st.markdown(menu_style, unsafe_allow_html=True)
