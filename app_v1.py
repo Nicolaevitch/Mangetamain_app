@@ -6,7 +6,7 @@ merged_clean_df = pd.read_csv('base_light_V3.csv', low_memory=False)
 ingredients_part1 = pd.read_csv('id_ingredients_up_to_207226.csv', low_memory=False)
 ingredients_part2 = pd.read_csv('id_ingredients_up_to_537716.csv', low_memory=False)
 
-# Ajouter un fond d'écran (image à partir de l'URL)
+# Ajouter un fond d'écran (image à partir de l'URL) et modifier la couleur de la police en blanc
 page_bg_img = '''
 <style>
 .stApp {
@@ -14,6 +14,13 @@ page_bg_img = '''
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    color: white;  /* Changer la couleur de la police en blanc */
+}
+body {
+    color: white;
+}
+h1, h2, h3, h4, h5, h6 {
+    color: white; /* Changer les titres en blanc */
 }
 </style>
 '''
@@ -27,8 +34,8 @@ st.subheader("Top 10 des recettes avec le meilleur score")
 top_10_recipes = merged_clean_df.sort_values(by='average_rating', ascending=False).head(10)
 st.dataframe(top_10_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']])
 
-# Ajout de filtres interactifs
-st.sidebar.header("Filtres")
+# Ajout de filtres interactifs (changement du bouton de filtre)
+st.sidebar.markdown('<h2 style="color: white;">Filtres meilleures recettes</h2>', unsafe_allow_html=True)
 selected_palmares = st.sidebar.multiselect(
     "Filtrer par palmarès",
     options=merged_clean_df['palmarès'].unique(),
