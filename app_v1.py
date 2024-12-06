@@ -32,39 +32,39 @@ filtered_df = merged_clean_df[
     (merged_clean_df['steps_category'].isin(selected_steps_category))
 ]
 
-# Champ d'entrée pour l'ID
-user_id = st.text_input("Entrez un ID :", "")
+# Champ d'entrée pour le contributor_id
+user_id = st.text_input("Entrez un contributor_id :", "")
 
-# Vérifier si un ID est saisi
+# Vérifier si un contributor_id est saisi
 if user_id:
     try:
         # Convertir l'ID en entier
         user_id = int(user_id)
         
-        # Filtrer les données pour l'utilisateur
-        filtered_data = filtered_df[filtered_df['id'] == user_id]
+        # Filtrer les données pour le contributor_id
+        filtered_data = filtered_df[filtered_df['contributor_id'] == user_id]
         
         if not filtered_data.empty:
-            # Calculer le total des recettes pour cet utilisateur
-            total_recipes = filtered_df[filtered_df['id'] == user_id].shape[0]
+            # Calculer le total des recettes pour ce contributor_id
+            total_recipes = filtered_data.shape[0]
 
             # Trier par les meilleures notes et sélectionner les colonnes importantes
             top_recipes = filtered_data.sort_values(by='average_rating', ascending=False).head(10)
             top_recipes = top_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']]
             
-            # Afficher les statistiques de l'utilisateur
-            st.subheader(f"Statistiques pour l'utilisateur avec l'ID {user_id}")
+            # Afficher les statistiques du contributor
+            st.subheader(f"Statistiques pour le contributor avec l'ID {user_id}")
             st.write(f"**Total de recettes publiées :** {total_recipes}")
 
-            # Afficher les meilleures recettes de l'utilisateur
-            st.subheader(f"Top 10 des meilleures recettes pour l'ID {user_id}")
+            # Afficher les meilleures recettes du contributor
+            st.subheader(f"Top 10 des meilleures recettes pour le contributor_id {user_id}")
             st.dataframe(top_recipes)
         else:
-            st.warning("Aucune recette trouvée pour cet ID.")
+            st.warning("Aucune recette trouvée pour ce contributor_id.")
     except ValueError:
-        st.error("Veuillez entrer un ID valide.")
+        st.error("Veuillez entrer un contributor_id valide.")
 else:
-    st.info("Veuillez entrer un ID pour afficher les résultats.")
+    st.info("Veuillez entrer un contributor_id pour afficher les résultats.")
 
 # Afficher les données filtrées avec les filtres interactifs
 if not user_id:
