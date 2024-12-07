@@ -68,7 +68,7 @@ class RecipeApp:
     def display_macro_ingredients_menu(self):
         """Affiche un menu déroulant pour choisir plusieurs ingrédients macro."""
         selected_macros = st.multiselect(
-            "Sélectionnez les ingrédients macro parmi la liste triée :",
+            "",
             options=self.ingredients_macro
         )
         return selected_macros
@@ -84,7 +84,7 @@ class RecipeApp:
 
     def run(self):
         """Exécute l'application Streamlit."""
-        st.title("Recipe App")
+        st.title("Qu'est ce que tu as dans ton frigo ?")
 
         # Étape 1 : Sélection des ingrédients macro
         selected_ingredients = self.display_macro_ingredients_menu()
