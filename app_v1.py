@@ -20,7 +20,13 @@ body {
     color: #8B4513; /* Change tout le texte au centre en marron */
 }
 h1, h2, h3, h4, h5, h6 {
-    color: #8B4513; /* Change aussi la couleur des titres */
+    color: #8B4513; /* Couleur du texte */
+    background-color: rgba(255, 255, 255, 0.8); /* Rectangle blanc semi-transparent */
+    padding: 10px; /* Espacement interne */
+    border-radius: 10px; /* Coins arrondis */
+    display: inline-block; /* Ajuster la taille du rectangle au texte */
+    text-align: center; /* Centrer le texte */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Ajouter une ombre légère */
 }
 .sidebar .block-container h1, .sidebar .block-container h2, .sidebar .block-container h3, .sidebar .block-container h4 {
     font-size: larger; /* Augmente la taille des textes dans la barre latérale */
