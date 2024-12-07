@@ -60,6 +60,9 @@ class RecipeApp:
 
         # Récupérer les détails des recettes depuis base_light_V3
         filtered_recipes = self.recipes_clean[self.recipes_clean['id'].isin(filtered_ids)]
+
+        # Ajouter les ingrédients aux données des recettes
+        filtered_recipes = pd.merge(filtered_recipes, filtered_ingredients, on='id', how='left')
         return filtered_recipes
 
     def display_macro_ingredients_menu(self):
@@ -75,7 +78,7 @@ class RecipeApp:
         filtered_recipes = self.filter_recipes(selected_ingredients)
         if not filtered_recipes.empty:
             st.write(f"Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
-            st.dataframe(filtered_recipes[['id', 'name', 'contributor_id']])
+            st.dataframe(filtered_recipes[['id', 'name', 'contributor_id', 'ingredients']])
         else:
             st.title("On est pas des cakes !")
 
