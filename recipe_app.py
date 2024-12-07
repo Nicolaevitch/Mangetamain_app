@@ -77,7 +77,7 @@ class RecipeApp:
             st.write(f"Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
             st.dataframe(filtered_recipes[['id', 'name', 'contributor_id']])
         else:
-            st.warning("On est pas des cakes !")
+            st.title("On est pas des cakes !")
 
     def run(self):
         """Exécute l'application Streamlit."""
