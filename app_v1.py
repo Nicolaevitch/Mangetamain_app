@@ -17,47 +17,32 @@ page_bg_img = '''
     background-attachment: fixed;
 }
 body {
-    color: #8B4513; /* Change tout le texte au centre en marron */
+    color: #8B4513;
 }
 h1, h2, h3, h4, h5, h6 {
-    color: #8B4513; /* Couleur du texte */
-    background-color: rgba(255, 255, 255, 0.8); /* Rectangle blanc semi-transparent */
-    padding: 10px; /* Espacement interne */
-    border-radius: 10px; /* Coins arrondis */
-    display: inline-block; /* Ajuster la taille du rectangle au texte */
-    text-align: center; /* Centrer le texte */
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Ajouter une ombre légère */
+    color: #8B4513;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    text-align: center;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
 }
-.sidebar .block-container h1, .sidebar .block-container h2, .sidebar .block-container h3, .sidebar .block-container h4 {
-    font-size: larger; /* Augmente la taille des textes dans la barre latérale */
+.stTextContainer {
+    color: #8B4513;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+.sidebar-content {
+    visibility: visible; /* Ouvre le menu de gauche par défaut */
+    opacity: 1;
 }
 </style>
 '''
 st.markdown(page_bg_img, unsafe_allow_html=True)
-
-# Style pour personnaliser le menu et agrandir la flèche
-menu_style = '''
-<style>
-.sidebar .block-container label {
-    font-weight: bold;
-    font-style: italic;
-    font-size: large; /* Augmente la taille du texte Menu */
-}
-.sidebar .block-container .radio {
-    font-size: larger; /* Augmente la taille des options Accueil et Idée recette */
-}
-.css-1v0mbdj .stSelectbox div[role="combobox"] {
-    font-size: larger; /* Augmente la taille du texte dans le menu déroulant */
-}
-.css-1v0mbdj .stSelectbox div[role="combobox"]::after {
-    content: " ⬇️ Chercher ici"; /* Ajoute le texte "Chercher ici" avec une grande flèche */
-    font-size: larger;
-    font-weight: bold;
-    color: #8B4513; /* Marron pour correspondre au thème */
-}
-</style>
-'''
-st.markdown(menu_style, unsafe_allow_html=True)
 
 # Créer le menu pour changer de page
 menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !"], index=0)
@@ -88,7 +73,7 @@ if menu == "Accueil":
 
     # Appliquer les filtres
     filtered_df = merged_clean_df[
-        (merged_clean_df['palmarès'].isin(selected_palmares)) &
+        (merged_clean_df['palmarès'].isin(selected_palmares)) & 
         (merged_clean_df['steps_category'].isin(selected_steps_category))
     ]
 
@@ -131,7 +116,7 @@ if menu == "Accueil":
 elif menu == "Idée recette !":
     # Titre de la page
     st.title("Idée recette !")
-    st.write("Ici, vous pouvez explorer de nouvelles idées de recettes.")
+    st.markdown('<div class="stTextContainer">Ici, vous pouvez explorer de nouvelles idées de recettes.</div>', unsafe_allow_html=True)
 
     # Instancier et exécuter RecipeApp
     app = RecipeApp()
