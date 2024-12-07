@@ -12,14 +12,25 @@ class RecipeApp:
             "mayonnaise", "paprika", "chicken", "worcestershire sauce",
             "parsley", "cornstarch", "carrot", "chili", "bacon", "potatoe"
         ])
-        # Charger les données
+        # Chemins des fichiers
+        self.file_part1 = 'id_ingredients_up_to_207226.csv'
+        self.file_part2 = 'id_ingredients_up_to_537716.csv'
+        self.main_file = 'base_light_V3.csv'
+        # Charger les données principales
         self.recipes_clean = self.load_main_data()
 
     @staticmethod
     @st.cache_data
     def load_main_data():
         """Charge les données principales depuis base_light_V3."""
-        return pd.read_csv('base_light_V3.csv', usecols=['id', 'name', 'ingredients', 'contributor_id'], low_memory=False)
+        return pd.read_csv('base_light_V3.csv', usecols=['id', 'name', 'contributor_id'], low_memory=False)
+
+    def get_ingredients_data(self):
+        """Charge et combine les données des deux fichiers d'ingrédients."""
+        part1_data = pd.read_csv(self.file_part1, usecols=['id', 'ingredients'], low_memory=False)
+        part2_data = pd.read_csv(self.file_part2, usecols=['id', 'ingredients'], low_memory=False)
+        combined_data = pd.concat([part1_data, part2_data])
+        return combined_data
 
     def filter_recipes(self, selected_ingredients):
         """
@@ -29,6 +40,8 @@ class RecipeApp:
         if not selected_ingredients:
             return pd.DataFrame()  # Si aucun ingrédient sélectionné, renvoyer un DataFrame vide
 
+        ingredients_data = self.get_ingredients_data()
+
         def contains_all_selected_ingredients(recipe_ingredients):
             """Vérifie si les ingrédients de la recette contiennent tous les ingrédients sélectionnés."""
             recipe_ingredients = set(ast.literal_eval(recipe_ingredients))
@@ -37,11 +50,17 @@ class RecipeApp:
                 for selected in selected_ingredients
             )
 
-        # Appliquer le filtre
-        filtered_recipes = self.recipes_clean[
-            self.recipes_clean['ingredients'].apply(contains_all_selected_ingredients)
+        # Appliquer le filtre sur les ingrédients
+        filtered_ingredients = ingredients_data[
+            ingredients_data['ingredients'].apply(contains_all_selected_ingredients)
         ]
-        return filtered_recipes.head(10)  # Limiter aux 10 premières recettes
+
+        # Limiter aux 10 premières recettes
+        filtered_ids = filtered_ingredients['id'].head(10)
+
+        # Récupérer les détails des recettes depuis base_light_V3
+        filtered_recipes = self.recipes_clean[self.recipes_clean['id'].isin(filtered_ids)]
+        return filtered_recipes
 
     def display_macro_ingredients_menu(self):
         """Affiche un menu déroulant pour choisir plusieurs ingrédients macro."""
