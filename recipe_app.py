@@ -23,7 +23,7 @@ class RecipeApp:
     @st.cache_data
     def load_main_data():
         """Charge les données principales depuis base_light_V3."""
-        return pd.read_csv('base_light_V3.csv', usecols=['id', 'name', 'contributor_id'], low_memory=False)
+        return pd.read_csv('base_light_V3.csv', low_memory=False)
 
     def get_ingredients_data(self):
         """Charge et combine les données des deux fichiers d'ingrédients."""
@@ -68,7 +68,7 @@ class RecipeApp:
     def display_macro_ingredients_menu(self):
         """Affiche un menu déroulant pour choisir plusieurs ingrédients macro."""
         selected_macros = st.multiselect(
-            "",
+            "Sélectionnez les ingrédients macro parmi la liste triée :",
             options=self.ingredients_macro
         )
         return selected_macros
@@ -78,25 +78,35 @@ class RecipeApp:
         filtered_recipes = self.filter_recipes(selected_ingredients)
 
         if not filtered_recipes.empty:
-            st.write("Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
+            st.write("Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
 
-            # Step 1: Add a filter for selecting visible columns
-            available_columns = list(filtered_recipes.columns)
-            selected_columns = st.multiselect(
-                "Choisissez les colonnes à afficher :",
-                options=available_columns,
-                default=['id', 'name', 'contributor_id', 'ingredients']
+            # Étape 1 : Sélectionner une recette
+            selected_recipe = st.selectbox(
+                "Choisissez une recette à afficher :", 
+                options=filtered_recipes['name']
             )
 
-            # Step 2: Wrap text in the 'ingredients' column
-            if 'ingredients' in selected_columns:
-                filtered_recipes['ingredients'] = filtered_recipes['ingredients'].apply(
+            # Étape 2 : Filtrer les données pour la recette sélectionnée
+            selected_recipe_data = filtered_recipes[filtered_recipes['name'] == selected_recipe]
+
+            # Étape 3 : Sélectionner les informations à afficher
+            info_options = ['id', 'name', 'contributor_id', 'steps_category', 'palmarès', 'ingredients']
+            selected_info = st.multiselect(
+                "Choisissez les informations à afficher :",
+                options=info_options,
+                default=['id', 'name', 'ingredients']
+            )
+
+            # Étape 4 : Mettre les ingrédients à la ligne
+            if 'ingredients' in selected_info:
+                selected_recipe_data['ingredients'] = selected_recipe_data['ingredients'].apply(
                     lambda x: "\n".join(x) if isinstance(x, list) else x
                 )
 
-            # Step 3: Display the filtered recipes without horizontal scrolling
+            # Étape 5 : Afficher les informations sélectionnées
             st.dataframe(
-                filtered_recipes[selected_columns]
+                selected_recipe_data[selected_info],
+                use_container_width=True
             )
         else:
             st.title("On est pas des cakes !")
