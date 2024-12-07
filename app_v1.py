@@ -17,24 +17,27 @@ page_bg_img = '''
     background-attachment: fixed;
 }
 body {
-    color: #8B4513;
+    color: #8B4513; /* Change tout le texte au centre en marron */
 }
 h1, h2, h3, h4, h5, h6 {
-    color: #8B4513;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 10px;
-    display: inline-block;
-    text-align: center;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    color: #8B4513; /* Couleur du texte */
+    background-color: rgba(255, 255, 255, 0.8); /* Rectangle blanc semi-transparent */
+    padding: 10px; /* Espacement interne */
+    border-radius: 10px; /* Coins arrondis */
+    display: inline-block; /* Ajuster la taille du rectangle au texte */
+    text-align: center; /* Centrer le texte */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Ajouter une ombre légère */
+}
+.sidebar .block-container h1, .sidebar .block-container h2, .sidebar .block-container h3, .sidebar .block-container h4 {
+    font-size: larger; /* Augmente la taille des textes dans la barre latérale */
 }
 .stTextContainer {
-    color: #8B4513;
-    background-color: rgba(255, 255, 255, 0.8);
+    color: #8B4513; /* Couleur du texte dans les rectangles */
+    background-color: rgba(255, 255, 255, 0.8); /* Rectangle blanc semi-transparent */
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 15px;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Ombre légère */
 }
 .sidebar-content {
     visibility: visible; /* Ouvre le menu de gauche par défaut */
@@ -43,6 +46,30 @@ h1, h2, h3, h4, h5, h6 {
 </style>
 '''
 st.markdown(page_bg_img, unsafe_allow_html=True)
+
+# Style pour personnaliser le menu et agrandir la flèche
+menu_style = '''
+<style>
+.sidebar .block-container label {
+    font-weight: bold;
+    font-style: italic;
+    font-size: large; /* Augmente la taille du texte Menu */
+}
+.sidebar .block-container .radio {
+    font-size: larger; /* Augmente la taille des options Accueil et Idée recette */
+}
+.css-1v0mbdj .stSelectbox div[role="combobox"] {
+    font-size: larger; /* Augmente la taille du texte dans le menu déroulant */
+}
+.css-1v0mbdj .stSelectbox div[role="combobox"]::after {
+    content: " ⬇️ Chercher ici"; /* Ajoute le texte "Chercher ici" avec une grande flèche */
+    font-size: larger;
+    font-weight: bold;
+    color: #8B4513; /* Marron pour correspondre au thème */
+}
+</style>
+'''
+st.markdown(menu_style, unsafe_allow_html=True)
 
 # Créer le menu pour changer de page
 menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !"], index=0)
