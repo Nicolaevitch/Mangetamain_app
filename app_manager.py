@@ -1,34 +1,17 @@
-from typing import List
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import streamlit as st
+import seaborn as sns
 import requests
-from PIL import Image
 import io
 import streamlit as st
-import logging
-import pandas as pd
+from sklearn.manifold import TSNE
+from sklearn.feature_extraction.text import TfidfVectorizer
+from typing import List
+from PIL import Image
 
-# Configuration du logger
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("debug_app.log"),
-        logging.FileHandler("errors_app.log"),
-    ],
-)
-
-# Fonction pour réinitialiser les logs
-def reset_logger():
-    # Supprimer tous les handlers de log existants
-    for handler in logging.root.handlers[:]:
-        logging.root.removeHandler(handler)
-    
-    # Reconfigurer le logger avec un nouveau handler
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-
-
-logger = logging.getLogger(__name__)
-
-class AppManager:
+class AppManager():
 
     def hide_streamlit_ui_elements(self, hide_menu: bool = True, hide_footer: bool = True, custom_class: str = None):
         """
@@ -248,138 +231,161 @@ class AppManager:
         except Exception as e:
             st.error(f"Erreur lors de l'affichage du titre ajusté : {e}")
 
-    def plot_tsne_ingredients(self, frac: float = 0.1, num_ingredients: int = 20):
-        """
-        Effectue une réduction de dimension avec t-SNE sur les ingrédients d'un dataset
-        et trace une visualisation des ingrédients dominants.
 
-        Parameters:
-        ----------
-        frac : float, optional
-            Fraction du dataset à échantillonner pour la visualisation. Par défaut, 0.1.
-        num_ingredients : int, optional
-            Nombre d'ingrédients les plus fréquents à considérer pour la visualisation. Par défaut, 20.
+    def perform_tsne(recipes, selected_ingredients, contributor_id, n_components=2, n_iter=250):
+        """
+        Effectue une réduction dimensionnelle t-SNE directement sur les données vectorisées sans PCA préalable,
+        sans échantillonner les données, et en filtrant également les recettes par contributor_id et par les ingredients que l'utilisateur choisit.
+        Puis génère une visualisation t-SNE des recettes basées sur les ingrédients sélectionnés, 
+        et affiche les deux recettes les plus éloignées sur le graphique avec leurs noms. Les résultats sont affichés 
+        dans une interface Streamlit si utilisée.
+
+        Args:
+            recipes (pd.DataFrame): 
+                Un DataFrame contenant les recettes. Chaque recette doit avoir les colonnes suivantes :
+                - 'ingredients' : Liste des ingrédients sous forme de texte ou de chaîne de caractères.
+                - 'contributor_id' : Identifiant unique du contributeur.
+                - 'name' : Nom de la recette.
+            
+            selected_ingredients (list of str): 
+                Liste d'ingrédients utilisés pour filtrer les recettes.
+
+            contributor_id (str or int): 
+                Identifiant unique du contributeur pour filtrer les recettes spécifiquement pour cet utilisateur.
+            
+            n_components (int, optionnel, par défaut=2): 
+                Nombre de dimensions de sortie pour la réduction t-SNE. Par défaut, 2 pour une visualisation en 2D.
+            
+            n_iter (int, optionnel, par défaut=250): 
+                Nombre d'itérations que t-SNE effectuera lors de la réduction de dimension. Plus ce nombre est élevé, 
+                plus la convergence sera précise, mais cela prendra aussi plus de temps de calcul.
 
         Returns:
-        -------
-        None
-            Affiche une visualisation t-SNE dans l'application Streamlit.
-
-        Raises:
-        ------
-        Exception
-            Si une erreur survient lors de la génération ou de l'affichage de la visualisation.
+            None : 
+                Cette fonction génère une visualisation t-SNE des recettes filtrées et affiche les noms des deux recettes 
+                les plus éloignées sur le graphique. Si un problème survient (par exemple, un nombre insuffisant de recettes), 
+                un avertissement sera affiché dans l'interface Streamlit.
+        
+        Exceptions :
+            Si des erreurs surviennent lors de la génération du graphique ou du traitement des données, un avertissement 
+            sera affiché dans l'interface Streamlit.
         """
+        
         try:
-            import matplotlib.pyplot as plt
-            from sklearn.decomposition import PCA
-            from sklearn.manifold import TSNE
-            from sklearn.feature_extraction.text import TfidfVectorizer
-            from collections import Counter
-
-            # Charger et échantillonner les données
-            sampled_recipes = self.recipes.sample(frac=frac)
-            
-            # Identifier les ingrédients les plus fréquents
-            all_ingredients = sampled_recipes['ingredients'].str.split().explode()
-            top_ingredients = [item[0] for item in Counter(all_ingredients).most_common(num_ingredients)]
-
-            # Filtrer les ingrédients
-            sampled_recipes['filtered_ingredients'] = sampled_recipes['ingredients'].apply(
-                lambda x: ' '.join([word for word in x.split() if word in top_ingredients])
+            # Filtrer les recettes basées sur les ingrédients sélectionnés
+            recipes['filtered_ingredients'] = recipes['ingredients'].apply(
+                lambda x: ' '.join([word for word in x.split() if word in selected_ingredients])
             )
+
+            # Filtrer les recettes pour le contributeur spécifié (contributor_id)
+            filtered_recipes = recipes[recipes['contributor_id'] == contributor_id]  # Filtrer par contributor_id
+
+            # Filtrer les recettes qui ont des ingrédients valides après le filtrage
+            filtered_recipes = filtered_recipes[filtered_recipes['filtered_ingredients'] != '']
+
+            if filtered_recipes.empty:
+                print("Aucune recette après filtrage, essayez avec d'autres ingrédients.")
+                return
 
             # Identifier un ingrédient dominant
             def get_dominant_ingredient(ingredients):
-                ingredient_list = ingredients.split()
-                for ingredient in top_ingredients:
+                ingredient_list = ingredients.split() if ingredients else []
+                for ingredient in selected_ingredients:
                     if ingredient in ingredient_list:
                         return ingredient
                 return 'Other'
 
-            sampled_recipes['dominant_ingredient'] = sampled_recipes['filtered_ingredients'].apply(get_dominant_ingredient)
+            # Vérification que la colonne filtered_ingredients n'est pas vide
+            if filtered_recipes['filtered_ingredients'].isnull().any():
+                print("Certaines recettes ont des ingrédients filtrés vides.")
+                return
+
+            # Appliquer la fonction de l'ingrédient dominant
+            filtered_recipes['dominant_ingredient'] = filtered_recipes['filtered_ingredients'].apply(get_dominant_ingredient)
 
             # Vectorisation avec TF-IDF
-            vectorizer = TfidfVectorizer(stop_words='english')
-            X = vectorizer.fit_transform(sampled_recipes['filtered_ingredients'])
+            vectorizer = TfidfVectorizer(stop_words='english', max_features=1000)  # Limiter le nombre de features
+            X_tfidf = vectorizer.fit_transform(filtered_recipes['filtered_ingredients'])
 
-            # Réduction avec PCA
-            pca = PCA(n_components=5)
-            X_pca = pca.fit_transform(X.toarray())
+            # Vérification de la taille des données après la vectorisation
+            if X_tfidf.shape[0] < 50:
+                print("Il n'y a pas assez de recettes pour générer une visualisation.")
+                return
 
-            # Réduction avec t-SNE
-            tsne = TSNE(n_components=2, random_state=42, n_jobs=-1, perplexity=30, learning_rate=200, max_iter=300)
-            X_tsne = tsne.fit_transform(X_pca)
+            # Réduction dimensionnelle avec t-SNE
+            tsne = TSNE(n_components=n_components, random_state=42, perplexity=30, learning_rate=200, n_jobs=-1, max_iter=n_iter, init='random')
+            X_tsne = tsne.fit_transform(X_tfidf)  # pas de toarray() ici
 
             # Ajouter les coordonnées t-SNE au dataset
-            sampled_recipes['tsne1'] = X_tsne[:, 0]
-            sampled_recipes['tsne2'] = X_tsne[:, 1]
+            filtered_recipes['tsne1'] = X_tsne[:, 0]
+            filtered_recipes['tsne2'] = X_tsne[:, 1]
 
-            # Générer une palette de couleurs dynamique
-            unique_classes = sampled_recipes['dominant_ingredient'].nunique()
-            palette = sns.color_palette("tab20", n_colors=unique_classes)
+            # Calculer la distance euclidienne entre chaque paire de points
+            distances = np.linalg.norm(X_tsne[:, np.newaxis] - X_tsne, axis=2)
 
-            # Visualisation
+            # Trouver les indices des deux points les plus éloignés
+            np.fill_diagonal(distances, 0)  # Ignorer la diagonale (distance d'un point à lui-même)
+            max_dist_indices = np.unravel_index(np.argmax(distances), distances.shape)
+
+            # Récupérer les indices des recettes correspondantes
+            point_1_index, point_2_index = max_dist_indices
+            recipe_1 = filtered_recipes.iloc[point_1_index]
+            recipe_2 = filtered_recipes.iloc[point_2_index]
+
+            # Afficher les recettes les plus éloignées
+            print(f"Recette 1: {recipe_1['name']}, Dominant Ingredient: {recipe_1['dominant_ingredient']}")
+            print(f"Recette 2: {recipe_2['name']}, Dominant Ingredient: {recipe_2['dominant_ingredient']}")
+
+            # Visualisation avec Seaborn
             plt.figure(figsize=(12, 8))
-            sns.scatterplot(
+            scatter = sns.scatterplot(
                 x='tsne1',
                 y='tsne2',
                 hue='dominant_ingredient',
-                data=sampled_recipes,
-                palette=palette,
+                data=filtered_recipes,
+                palette="tab20",
                 s=100,
                 marker='o'
             )
-
             plt.title("t-SNE Visualization of Recipe Ingredients (Dominant Ingredients)", fontsize=16)
             plt.xlabel("t-SNE Component 1", fontsize=12)
             plt.ylabel("t-SNE Component 2", fontsize=12)
             plt.legend(title="Dominant Ingredient", bbox_to_anchor=(1.05, 1), loc='upper left')
-            plt.xticks([])  
-            plt.yticks([])  
+            plt.xticks([])  # Supprimer les ticks sur l'axe X
+            plt.yticks([])  # Supprimer les ticks sur l'axe Y
+            plt.grid(True, linestyle='--', alpha=0.5)
+            
+
+            # Annoter les deux points les plus éloignés avec les noms des recettes
+            scatter.annotate(
+                recipe_1['name'],
+                xy=(recipe_1['tsne1'], recipe_1['tsne2']),
+                xytext=(recipe_1['tsne1'] + 0.5, recipe_1['tsne2'] + 0.5),
+                arrowprops=dict(facecolor='black', arrowstyle="->"),
+                fontsize=10,
+                color='black'
+            )
+            scatter.annotate(
+                recipe_2['name'],
+                xy=(recipe_2['tsne1'], recipe_2['tsne2']),
+                xytext=(recipe_2['tsne1'] + 0.5, recipe_2['tsne2'] - 0.5),
+                arrowprops=dict(facecolor='black', arrowstyle="->"),
+                fontsize=10,
+                color='black'
+            )
+            
+            st.pyplot(plt)
+
+
+            # Afficher le graphique
             plt.show()
 
         except Exception as e:
-            st.error(f"Erreur lors de la génération du graphique t-SNE : {e}")
+            print(f"Erreur lors de la génération du graphique t-SNE : {e}")
 
-
-
-
-
-            
-adjust_title_style = """
-<style>
-h1 {
-    position: fixed;
-    margin-top: 50px; /* Ajuste la marge supérieure, réduisez la valeur pour descendre le titre */
-}
-</style>
-"""
-
-st.markdown('<h1 class="title">Comparateur de Recettes 🍲</h1>', unsafe_allow_html=True)
-
-st.markdown("""
-    <script>
-        document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") {
-                // Vous pouvez choisir ce que vous voulez faire ici. Par exemple, pour stopper l'application, rafraîchissez la page.
-                window.location.reload();
-            }
-        });
-    </script>
-""", unsafe_allow_html=True)
-
-
-
-hide_streamlit_style = """
-            <style>
-                /* Hide the Streamlit header and menu */
-                header {visibility: hidden;}
-                /* Optionally, hide the footer */
-                .streamlit-footer {display: none;}
-                /* Hide your specific div class, replace class name with the one you identified */
-                .st-emotion-cache-uf99v8 {display: none;}
-            </style>
-            """
-
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+# Exemple d'appel
+#app_manager = AppManager()
+#recipes = pd.read_csv("pp_recipes_cleaned.csv")
+#contributor_id = 133174
+#selected_ingredients = ['salt', 'pepper']
+#app_manager.perform_tsne(recipes, selected_ingredients, contributor_id)
