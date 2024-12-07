@@ -67,12 +67,9 @@ class RecipeApp:
 
     def display_macro_ingredients_menu(self):
         """Affiche un menu déroulant pour choisir plusieurs ingrédients macro."""
-        st.subheader("Choisissez vos ingrédients macro")
         selected_macros = st.multiselect(
-            "Sélectionnez les ingrédients macro parmi la liste triée :",
             options=self.ingredients_macro
         )
-        st.write(f"Vous avez sélectionné : {', '.join(selected_macros) if selected_macros else 'Aucun ingrédient sélectionné.'}")
         return selected_macros
 
     def display_filtered_recipes(self, selected_ingredients):
@@ -83,12 +80,11 @@ class RecipeApp:
             st.write(f"Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
             st.dataframe(filtered_recipes[['id', 'name', 'contributor_id', 'ingredients']])
         else:
-            st.warning("Aucune recette ne correspond à vos ingrédients sélectionnés.")
+            st.warning("On est pas des cakes !")
 
     def run(self):
         """Exécute l'application Streamlit."""
         st.title("Recipe App")
-        st.write("Explorez les recettes en fonction des ingrédients sélectionnés.")
 
         # Étape 1 : Sélection des ingrédients macro
         selected_ingredients = self.display_macro_ingredients_menu()
