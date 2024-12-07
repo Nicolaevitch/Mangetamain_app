@@ -1,16 +1,17 @@
 import pandas as pd
 import streamlit as st
-
-import pandas as pd
-import streamlit as st
+import ast
 
 class RecipeApp:
     def __init__(self):
-        # Chemins vers les fichiers
-        self.main_file = 'base_light_V3.csv'
-        self.file_part1 = 'id_ingredients_up_to_207226.csv'
-        self.file_part2 = 'id_ingredients_up_to_537716.csv'
-
+        self.ingredients_macro = sorted([
+            "butter", "sugar", "onion", "water", "eggs", "oil", "flour",
+            "milk", "garlic", "pepper", "baking powder", "egg", "cheese",
+            "lemon juice", "baking soda", "vanilla", "cinnamon", "tomatoe",
+            "sour cream", "honey", "cream cheese", "celery", "soy sauce",
+            "mayonnaise", "paprika", "chicken", "worcestershire sauce",
+            "parsley", "cornstarch", "carrot", "chili", "bacon", "potatoe"
+        ])
         # Charger les données
         self.recipes_clean = self.load_main_data()
 
@@ -18,51 +19,62 @@ class RecipeApp:
     @st.cache_data
     def load_main_data():
         """Charge les données principales depuis base_light_V3."""
-        return pd.read_csv('base_light_V3.csv', usecols=['id', 'name', 'contributor_id'])
+        return pd.read_csv('base_light_V3.csv', usecols=['id', 'name', 'ingredients', 'contributor_id'], low_memory=False)
 
-    def get_ingredients_by_ids(self, recipe_ids):
-        """Récupère les ingrédients pour une liste d'IDs de recette depuis les fichiers spécifiques."""
-        part1_ids = [rid for rid in recipe_ids if rid <= 207226]
-        part2_ids = [rid for rid in recipe_ids if rid > 207226]
+    def filter_recipes(self, selected_ingredients):
+        """
+        Filtre les recettes contenant tous les ingrédients sélectionnés
+        (recherche partielle sur les noms d'ingrédients).
+        """
+        if not selected_ingredients:
+            return pd.DataFrame()  # Si aucun ingrédient sélectionné, renvoyer un DataFrame vide
 
-        # Charger les fichiers d'ingrédients
-        part1_data = pd.read_csv(self.file_part1, usecols=['id', 'ingredients'], low_memory=False)
-        part2_data = pd.read_csv(self.file_part2, usecols=['id', 'ingredients'], low_memory=False)
+        def contains_all_selected_ingredients(recipe_ingredients):
+            """Vérifie si les ingrédients de la recette contiennent tous les ingrédients sélectionnés."""
+            recipe_ingredients = set(ast.literal_eval(recipe_ingredients))
+            return all(
+                any(selected in ingredient for ingredient in recipe_ingredients)
+                for selected in selected_ingredients
+            )
 
-        # Filtrer les données pour les IDs demandés
-        filtered_part1 = part1_data[part1_data['id'].isin(part1_ids)]
-        filtered_part2 = part2_data[part2_data['id'].isin(part2_ids)]
+        # Appliquer le filtre
+        filtered_recipes = self.recipes_clean[
+            self.recipes_clean['ingredients'].apply(contains_all_selected_ingredients)
+        ]
+        return filtered_recipes.head(10)  # Limiter aux 10 premières recettes
 
-        # Combiner les données
-        combined_data = pd.concat([filtered_part1, filtered_part2])
-        return combined_data
+    def display_macro_ingredients_menu(self):
+        """Affiche un menu déroulant pour choisir plusieurs ingrédients macro."""
+        st.subheader("Choisissez vos ingrédients macro")
+        selected_macros = st.multiselect(
+            "Sélectionnez les ingrédients macro parmi la liste triée :",
+            options=self.ingredients_macro
+        )
+        st.write(f"Vous avez sélectionné : {', '.join(selected_macros) if selected_macros else 'Aucun ingrédient sélectionné.'}")
+        return selected_macros
 
-    def display_recipe_by_id(self, recipe_id):
-        """Affiche une recette spécifique par ID."""
-        # Rechercher la recette par ID dans le fichier principal
-        recipe = self.recipes_clean[self.recipes_clean['id'] == recipe_id]
-        if recipe.empty:
-            st.error(f"Aucune recette trouvée avec l'ID {recipe_id}.")
-            return
-
-        # Récupérer les ingrédients pour la recette
-        ingredients = self.get_ingredients_by_ids([recipe_id])
-        recipe_row = recipe.iloc[0]
-        ingredients_row = ingredients[ingredients['id'] == recipe_id]
-
-        # Affichage des détails
-        st.subheader(f"Recette : {recipe_row['name']}")
-        st.write(f"**Contributeur**: {recipe_row['contributor_id']}")
-        st.write(f"**Ingrédients**: {', '.join(ingredients_row['ingredients'].iloc[0]) if not ingredients_row.empty else 'Ingrédients non trouvés.'}")
+    def display_filtered_recipes(self, selected_ingredients):
+        """Affiche les recettes filtrées en fonction des ingrédients sélectionnés."""
+        st.subheader("Résultats des recettes filtrées")
+        filtered_recipes = self.filter_recipes(selected_ingredients)
+        if not filtered_recipes.empty:
+            st.write(f"Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
+            st.dataframe(filtered_recipes[['id', 'name', 'contributor_id']])
+        else:
+            st.warning("Aucune recette ne correspond à vos ingrédients sélectionnés.")
 
     def run(self):
         """Exécute l'application Streamlit."""
         st.title("Recipe App")
-        st.write("Recherchez une recette en fonction de son ID.")
+        st.write("Explorez les recettes en fonction des ingrédients sélectionnés.")
 
-        recipe_id = st.text_input("Entrez l'ID de la recette :", "")
-        if recipe_id.isdigit():
-            recipe_id = int(recipe_id)
-            self.display_recipe_by_id(recipe_id)
-        else:
-            st.warning("Veuillez entrer un ID valide.")
+        # Étape 1 : Sélection des ingrédients macro
+        selected_ingredients = self.display_macro_ingredients_menu()
+
+        # Étape 2 : Afficher les recettes filtrées
+        self.display_filtered_recipes(selected_ingredients)
+
+# Exécution de l'application
+if __name__ == "__main__":
+    app = RecipeApp()
+    app.run()
