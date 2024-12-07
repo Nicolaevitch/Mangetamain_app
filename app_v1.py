@@ -62,7 +62,7 @@ menu_style = '''
     font-size: larger; /* Augmente la taille du texte dans le menu déroulant */
 }
 .css-1v0mbdj .stSelectbox div[role="combobox"]::after {
-    content: " ⬇️ Chercher ici"; /* Ajoute le texte "Chercher ici" avec une grande flèche */
+    content: " ⬇️ Chercher ici !"; /* Ajoute le texte "Chercher ici" avec une grande flèche */
     font-size: larger;
     font-weight: bold;
     color: #8B4513; /* Marron pour correspondre au thème */
@@ -77,11 +77,6 @@ menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !"], index=0)
 if menu == "Accueil":
     # Titre de l'application
     st.title("Recherche des meilleures recettes")
-
-    # Afficher un top 10 des recettes avec le meilleur score average_rating
-    st.subheader("Top 10 des recettes avec le meilleur score")
-    top_10_recipes = merged_clean_df.sort_values(by='average_rating', ascending=False).head(10)
-    st.dataframe(top_10_recipes[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']])
 
     # Ajout de filtres interactifs (placés à droite)
     with st.sidebar:
