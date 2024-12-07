@@ -78,38 +78,47 @@ class RecipeApp:
         filtered_recipes = self.filter_recipes(selected_ingredients)
 
         if not filtered_recipes.empty:
-            st.write("Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
-
-            # Étape 1 : Sélectionner une recette
-            selected_recipe = st.selectbox(
-                "Choisissez une recette à afficher :", 
-                options=filtered_recipes['name']
-            )
-
-            # Étape 2 : Filtrer les données pour la recette sélectionnée
-            selected_recipe_data = filtered_recipes[filtered_recipes['name'] == selected_recipe]
-
-            # Étape 3 : Sélectionner les informations à afficher
+            # Étape 1 : Sélectionner les colonnes à afficher
             info_options = ['id', 'name', 'contributor_id', 'steps_category', 'palmarès', 'ingredients']
             selected_info = st.multiselect(
-                "Choisissez les informations à afficher :",
+                "Choisissez les colonnes à afficher :",
                 options=info_options,
                 default=['id', 'name', 'ingredients']
             )
 
-            # Étape 4 : Mettre les ingrédients à la ligne
+            # Étape 2 : Mettre les ingrédients à la ligne
             if 'ingredients' in selected_info:
-                selected_recipe_data['ingredients'] = selected_recipe_data['ingredients'].apply(
+                filtered_recipes['ingredients'] = filtered_recipes['ingredients'].apply(
                     lambda x: "\n".join(x) if isinstance(x, list) else x
                 )
 
-            # Étape 5 : Afficher les informations sélectionnées
+            # Étape 3 : Afficher les recettes filtrées
             st.dataframe(
-                selected_recipe_data[selected_info],
+                filtered_recipes[selected_info],
                 use_container_width=True
             )
+
+            # Étape 4 : Afficher un menu pour sélectionner une recette par ID
+            self.display_recipe_details(filtered_recipes, selected_info)
         else:
             st.title("On est pas des cakes !")
+
+    def display_recipe_details(self, filtered_recipes, selected_info):
+        """Affiche les détails d'une recette sélectionnée par ID."""
+        selected_recipe_id = st.selectbox(
+            "Choisissez une recette par ID :",
+            options=filtered_recipes['id']
+        )
+
+        # Filtrer la recette sélectionnée
+        selected_recipe_data = filtered_recipes[filtered_recipes['id'] == selected_recipe_id]
+
+        # Afficher les informations sélectionnées
+        st.subheader("Détails de la recette sélectionnée :")
+        st.dataframe(
+            selected_recipe_data[selected_info],
+            use_container_width=True
+        )
 
     def run(self):
         """Exécute l'application Streamlit."""
