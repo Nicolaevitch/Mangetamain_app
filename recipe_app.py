@@ -76,9 +76,29 @@ class RecipeApp:
     def display_filtered_recipes(self, selected_ingredients):
         """Affiche les recettes filtrées en fonction des ingrédients sélectionnés."""
         filtered_recipes = self.filter_recipes(selected_ingredients)
+
         if not filtered_recipes.empty:
-            st.write(f"Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
-            st.dataframe(filtered_recipes[['id', 'name', 'contributor_id', 'ingredients']])
+            st.write("Voici les 10 premières recettes contenant tous les ingrédients sélectionnés :")
+
+            # Step 1: Add a filter for selecting visible columns
+            available_columns = list(filtered_recipes.columns)
+            selected_columns = st.multiselect(
+                "Choisissez les colonnes à afficher :",
+                options=available_columns,
+                default=['id', 'name', 'contributor_id', 'ingredients']
+            )
+
+            # Step 2: Enable horizontal scrolling and line wrapping for 'ingredients'
+            if 'ingredients' in selected_columns:
+                filtered_recipes['ingredients'] = filtered_recipes['ingredients'].apply(
+                    lambda x: "\n".join(x) if isinstance(x, list) else x
+                )
+
+            # Step 3: Display the filtered recipes with selected columns
+            st.dataframe(
+                filtered_recipes[selected_columns],
+                use_container_width=True
+            )
         else:
             st.title("On est pas des cakes !")
 
@@ -91,6 +111,7 @@ class RecipeApp:
 
         # Étape 2 : Afficher les recettes filtrées
         self.display_filtered_recipes(selected_ingredients)
+
 
 # Exécution de l'application
 if __name__ == "__main__":
