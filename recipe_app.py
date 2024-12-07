@@ -88,16 +88,15 @@ class RecipeApp:
                 default=['id', 'name', 'contributor_id', 'ingredients']
             )
 
-            # Step 2: Enable horizontal scrolling and line wrapping for 'ingredients'
+            # Step 2: Wrap text in the 'ingredients' column
             if 'ingredients' in selected_columns:
                 filtered_recipes['ingredients'] = filtered_recipes['ingredients'].apply(
                     lambda x: "\n".join(x) if isinstance(x, list) else x
                 )
 
-            # Step 3: Display the filtered recipes with selected columns
+            # Step 3: Display the filtered recipes without horizontal scrolling
             st.dataframe(
-                filtered_recipes[selected_columns],
-                use_container_width=True
+                filtered_recipes[selected_columns]
             )
         else:
             st.title("On est pas des cakes !")
