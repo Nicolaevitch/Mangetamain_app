@@ -10,8 +10,11 @@ from sklearn.manifold import TSNE
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import List
 from PIL import Image
+import plotly.express as px
+import plotly.graph_objects as go
 
-class AppManager():
+
+class AppManager:
 
     def hide_streamlit_ui_elements(self, hide_menu: bool = True, hide_footer: bool = True, custom_class: str = None):
         """
@@ -142,7 +145,7 @@ class AppManager():
         """
         try:
             # Télécharger l'image distante
-            response = requests.get(url_im,timeout=10)
+            response = requests.get(image_url,timeout=10)
             response.raise_for_status()  # Vérifie les erreurs HTTP
 
             # Lire l'image directement depuis les données téléchargées
@@ -232,7 +235,7 @@ class AppManager():
             st.error(f"Erreur lors de l'affichage du titre ajusté : {e}")
 
 
-    def perform_tsne(recipes, selected_ingredients, contributor_id, n_components=2, n_iter=250):
+    def perform_tsne_prev(self,recipes : pd.DataFrame, selected_ingredients, contributor_id, n_components=2, n_iter=250):
         """
         Effectue une réduction dimensionnelle t-SNE directement sur les données vectorisées sans PCA préalable,
         sans échantillonner les données, et en filtrant également les recettes par contributor_id et par les ingredients que l'utilisateur choisit.
@@ -311,6 +314,10 @@ class AppManager():
             if X_tfidf.shape[0] < 50:
                 print("Il n'y a pas assez de recettes pour générer une visualisation.")
                 return
+            
+            st.write("Vérification des données avant t-SNE :")
+            st.write(f"Nombre de recettes après filtrage : {len(filtered_recipes)}")
+            st.write(f"Taille des données TF-IDF : {X_tfidf.shape}")
 
             # Réduction dimensionnelle avec t-SNE
             tsne = TSNE(n_components=n_components, random_state=42, perplexity=30, learning_rate=200, n_jobs=-1, max_iter=n_iter, init='random')
@@ -382,6 +389,129 @@ class AppManager():
 
         except Exception as e:
             print(f"Erreur lors de la génération du graphique t-SNE : {e}")
+            
+
+    def perform_tsne_with_streamlit(self,recipes: pd.DataFrame, selected_ingredients, contributor_id, n_components=2, n_iter=250):
+        try:
+            # Vérifier si les recettes sont disponibles
+            if recipes.empty:
+                st.warning("Aucune recette ne correspond aux ingrédients sélectionnés.")
+                return
+
+            recipes['dominant_ingredient'] = recipes['ingredients'].apply(
+                lambda x: self.get_dominant_ingredient(x, selected_ingredients)
+            )
+
+            # Filtrer et vectoriser les ingrédients
+            recipes['filtered_ingredients'] = recipes['ingredients'].apply(
+                lambda ingredient_list: [ingredient for ingredient in ingredient_list if ingredient in selected_ingredients]
+            )
+            recipes['filtered_ingredients'] = recipes['filtered_ingredients'].apply(lambda x: ' '.join(x))
+
+            if recipes['filtered_ingredients'].str.strip().eq('').all():
+                st.warning("Aucune recette ne contient les ingrédients sélectionnés.")
+                return
+
+            vectorizer = TfidfVectorizer(
+                tokenizer=lambda x: x.split(),
+                stop_words='english',
+                max_features=1000
+            )
+            X_tfidf = vectorizer.fit_transform(recipes['filtered_ingredients'])
+
+            if X_tfidf.shape[0] < 2:
+                st.warning("Pas assez de recettes pour appliquer t-SNE.")
+                return
+
+            # Appliquer t-SNE
+            tsne = TSNE(
+                n_components=n_components,
+                random_state=42,
+                perplexity=30,
+                learning_rate=200,
+                n_iter=n_iter,
+                init='random'
+            )
+            X_tsne = tsne.fit_transform(X_tfidf.toarray())
+
+            # Ajouter les résultats t-SNE au DataFrame
+            recipes['tsne1'] = X_tsne[:, 0]
+            recipes['tsne2'] = X_tsne[:, 1]
+
+            # Identifier les points les plus éloignés
+            distances = np.linalg.norm(X_tsne[:, np.newaxis] - X_tsne, axis=2)
+            np.fill_diagonal(distances, 0)
+            max_dist_indices = np.unravel_index(np.argmax(distances), distances.shape)
+            recipe_1 = recipes.iloc[max_dist_indices[0]]
+            recipe_2 = recipes.iloc[max_dist_indices[1]]
+
+            recipes['highlight'] = ''
+            recipes.loc[max_dist_indices[0], 'highlight'] = 'Farthest Recipe 1 ⭐'
+            recipes.loc[max_dist_indices[1], 'highlight'] = 'Farthest Recipe 2 ⭐'
+
+            # Créer le graphique interactif avec Plotly pour les dominant_ingredients uniquement
+            fig = px.scatter(
+                recipes,
+                x='tsne1',
+                y='tsne2',
+                color='dominant_ingredient',
+                hover_data=['name', 'id'],
+                title='t-SNE Visualization of Recipes',
+                color_discrete_sequence=px.colors.qualitative.T10
+            )
+
+            # Ajouter les annotations pour les recettes les plus éloignées
+            fig.add_trace(
+                go.Scatter(
+                    x=[recipe_1['tsne1'], recipe_2['tsne1']],
+                    y=[recipe_1['tsne2'], recipe_2['tsne2']],
+                    mode='markers+text',
+                    text=[f"Farthest Recipe 1: {recipe_1['name']}", f"Farthest Recipe 2: {recipe_2['name']}"],
+                    textposition=["top right", "top right"],
+                    marker=dict(size=12, color='gold', symbol='star'),
+                    showlegend=False  # Pas de légende pour les annotations des points éloignés
+                )
+            )
+
+            # Ajuster l'apparence des axes et de la grille
+                # Mettre à jour la mise en page pour cacher les labels des axes et centrer le titre
+            fig.update_layout(
+                xaxis=dict(
+                    title="t-SNE Component 1", 
+                    showticklabels=False,  # Cacher les labels sur l'axe X
+                    showgrid=True, 
+                    zeroline=False
+                ),
+                yaxis=dict(
+                    title="t-SNE Component 2", 
+                    showticklabels=False,  # Cacher les labels sur l'axe Y
+                    showgrid=True, 
+                    zeroline=False
+                ),
+                legend_title="Dominant Ingredient",  # Titre de la légende
+                title=dict(
+                    text="t-SNE Visualization of Recipes",  # Texte du titre
+                    font=dict(size=16),
+                    x=0.5,  # Centrer le titre horizontalement
+                    xanchor='center'  # Ancrage du titre centré
+                ),
+            )
+
+            # Afficher le graphique dans Streamlit
+            st.plotly_chart(fig, use_container_width=True)
+
+        except Exception as e:
+            st.error(f"Erreur lors de la génération du graphique t-SNE : {e}")
+
+                
+                    # Identifier l'ingrédient dominant
+    def get_dominant_ingredient(self, ingredient_list, selected_ingredients):
+        for ingredient in selected_ingredients:
+            if ingredient in ingredient_list:
+                return ingredient
+        return 'Other'
+
+
 
 # Exemple d'appel
 #app_manager = AppManager()

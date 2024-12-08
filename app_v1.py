@@ -1,17 +1,21 @@
 import pandas as pd
 import streamlit as st
 from recipe_app import RecipeApp
+from app_manager import AppManager
 
 # Charger les datasets avec l'option low_memory=False
 merged_clean_df = pd.read_csv('base_light_V3.csv', low_memory=False)
 ingredients_part1 = pd.read_csv('id_ingredients_up_to_207226.csv', low_memory=False)
 ingredients_part2 = pd.read_csv('id_ingredients_up_to_537716.csv', low_memory=False)
 
+manager = AppManager()
+
+
 # Ajouter un fond d'écran (image à partir de l'URL)
 page_bg_img = '''
 <style>
 .stApp {
-    background-image: url("https://burst.shopifycdn.com/photos/flatlay-iron-skillet-with-meat-and-other-food.jpg?width=925&format=pjpg&exif=0&iptc=0");
+    background-image: url("https://urlr.me/MzRucC");
     background-size: cover;
     background-repeat: no-repeat; 
     background-attachment: fixed;
@@ -72,7 +76,7 @@ menu_style = '''
 st.markdown(menu_style, unsafe_allow_html=True)
 
 # Créer le menu pour changer de page
-menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !"], index=0)
+menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !","Représentation des recettes"], index=0)
 
 if menu == "Accueil":
     # Titre de l'application
@@ -143,3 +147,59 @@ elif menu == "Idée recette !":
     # Instancier et exécuter RecipeApp
     app = RecipeApp()
     app.run()
+
+elif menu == 'Représentation des recettes':
+    # Instancier le gestionnaire d'application
+    app = RecipeApp()
+
+      # Étape 1 : Fusionner les fichiers d'ingrédients
+    # Concaténer les fichiers, en supposant qu'ils ont les mêmes colonnes
+    ingredients = pd.concat([ingredients_part1, ingredients_part2], ignore_index=True)
+
+    # Assurez-vous que les colonnes 'ingredients' sont des listes (non du texte brut)
+    # Supposons que les ingrédients sont encodés en texte brut dans les fichiers CSV :
+    ingredients['ingredients'] = ingredients['ingredients'].apply(eval)
+
+    # Étape 2 : Fusionner avec le DataFrame principal sur la clé 'id'
+    merged_clean_df = pd.merge(
+        merged_clean_df,
+        ingredients,
+        on='id',
+        how='inner'
+    )
+
+    # Étape 3 : Nettoyer les colonnes inutiles
+    merged_clean_df = merged_clean_df[['id', 'name', 'ingredients', 'contributor_id']]
+    
+    # Appliquer les filtres
+    unique_contributor_ids = sorted(merged_clean_df['contributor_id'].unique())
+    
+    st.subheader("Visualisation de mes recettes")
+    
+    # Ajouter un espacement de 4 lignes
+    st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
+    
+    contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
+
+    if contributor_id:
+        # Filtrer les données pour le contributor_id
+        filtered_recipes = merged_clean_df[merged_clean_df['contributor_id'] == contributor_id]
+
+
+        selected_macros = st.multiselect(
+            "Sélectionnez les ingrédients macro parmi la liste triée :",
+            options=app.ingredients_macro
+        )
+
+        # Assurez-vous que les ingrédients sont sélectionnés avant d'appeler t-SNE
+        if selected_macros:
+            manager.perform_tsne_with_streamlit(
+                recipes=filtered_recipes,  # Passez tout le DataFrame ici
+                selected_ingredients=selected_macros,  # Ingrédients sélectionnés
+                contributor_id=contributor_id  # ID du contributeur sélectionné
+            )
+        else:
+            st.warning("Veuillez sélectionner au moins un ingrédient.")
+
+    
+
