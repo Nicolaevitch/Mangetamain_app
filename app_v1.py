@@ -10,6 +10,7 @@ ingredients_part2 = pd.read_csv('id_ingredients_up_to_537716.csv', low_memory=Fa
 
 manager = AppManager()
 
+
 # Ajouter un fond d'écran (image à partir de l'URL)
 page_bg_img = '''
 <style>
@@ -197,10 +198,12 @@ elif menu == 'Représentation des recettes':
     # Instancier le gestionnaire d'application
     app = RecipeApp()
 
-    # Étape 1 : Fusionner les fichiers d'ingrédients
+      # Étape 1 : Fusionner les fichiers d'ingrédients
+    # Concaténer les fichiers, en supposant qu'ils ont les mêmes colonnes
     ingredients = pd.concat([ingredients_part1, ingredients_part2], ignore_index=True)
 
     # Assurez-vous que les colonnes 'ingredients' sont des listes (non du texte brut)
+    # Supposons que les ingrédients sont encodés en texte brut dans les fichiers CSV :
     ingredients['ingredients'] = ingredients['ingredients'].apply(eval)
 
     # Étape 2 : Fusionner avec le DataFrame principal sur la clé 'id'
@@ -219,11 +222,15 @@ elif menu == 'Représentation des recettes':
     
     st.subheader("Visualisation de mes recettes")
     
+    # Ajouter un espacement de 4 lignes
+    st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
+    
     contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
 
     if contributor_id:
         # Filtrer les données pour le contributor_id
         filtered_recipes = merged_clean_df[merged_clean_df['contributor_id'] == contributor_id]
+
 
         selected_macros = st.multiselect(
             "Sélectionnez les ingrédients macro parmi la liste triée :",
@@ -233,9 +240,9 @@ elif menu == 'Représentation des recettes':
         # Assurez-vous que les ingrédients sont sélectionnés avant d'appeler t-SNE
         if selected_macros:
             manager.perform_tsne_with_streamlit(
-                recipes=filtered_recipes,
-                selected_ingredients=selected_macros,
-                contributor_id=contributor_id
+                recipes=filtered_recipes,  # Passez tout le DataFrame ici
+                selected_ingredients=selected_macros,  # Ingrédients sélectionnés
+                contributor_id=contributor_id  # ID du contributeur sélectionné
             )
         else:
             st.warning("Veuillez sélectionner au moins un ingrédient.")
