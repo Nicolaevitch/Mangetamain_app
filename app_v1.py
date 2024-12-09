@@ -80,7 +80,7 @@ menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !","Représenta
 
 if menu == "Accueil":
     # Titre de l'application
-    st.title("Recherche des meilleures recettes")
+    st.title("Bienvenue sur ton profil de recettes !")  
 
     # Ajout de filtres interactifs (placés à droite)
     with st.sidebar:
