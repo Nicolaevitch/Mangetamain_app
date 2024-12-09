@@ -113,6 +113,52 @@ if menu == "Accueil":
         contributor_recipes = filtered_df[filtered_df['contributor_id'] == contributor_id]
 
         if not contributor_recipes.empty:
+            # Calculer les KPI
+            palmares = contributor_recipes['palmarès'].iloc[0]  # Supposons que chaque contributor_id a un palmarès unique
+            recipe_count = contributor_recipes['id'].nunique()
+
+            # Afficher les bulles d'information
+            st.markdown("""
+            <style>
+            .kpi-container {
+                display: flex;
+                gap: 20px;
+                margin: 20px 0;
+            }
+            .kpi-box {
+                background-color: #f4f4f4;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+                width: 200px;
+            }
+            .kpi-title {
+                font-size: 18px;
+                font-weight: bold;
+                color: #8B4513;
+            }
+            .kpi-value {
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 5px;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+            st.markdown(f"""
+            <div class="kpi-container">
+                <div class="kpi-box">
+                    <div class="kpi-title">Palmarès</div>
+                    <div class="kpi-value">{palmares}</div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-title">Nombre de Recettes</div>
+                    <div class="kpi-value">{recipe_count}</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
             # Limiter à 20 recettes maximum
             top_20_ids = contributor_recipes['id'].head(20)
 
@@ -200,6 +246,3 @@ elif menu == 'Représentation des recettes':
             )
         else:
             st.warning("Veuillez sélectionner au moins un ingrédient.")
-
-    
-
