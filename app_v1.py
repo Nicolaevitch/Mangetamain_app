@@ -54,36 +54,17 @@ class RecipeDashboard:
         '''
         st.markdown(page_bg_img, unsafe_allow_html=True)
 
-    def display_home_page(self):
-        """Affiche la page d'accueil avec les filtres et les données filtrées."""
-        st.title("Bienvenue sur ton profil de recettes !")
+def display_home_page(self):
+    """Affiche la page d'accueil sans les filtres dans la barre latérale."""
+    st.title("Bienvenue sur ton profil de recettes !")
 
-        # Ajouter des filtres dans la barre latérale
-        with st.sidebar:
-            st.header("Filtres")
-            selected_palmares = st.multiselect(
-                "Filtrer par palmarès",
-                options=self.merged_clean_df['palmarès'].unique(),
-                default=self.merged_clean_df['palmarès'].unique()
-            )
-            selected_steps_category = st.multiselect(
-                "Filtrer par catégorie de steps",
-                options=self.merged_clean_df['steps_category'].unique(),
-                default=self.merged_clean_df['steps_category'].unique()
-            )
+    # Menu déroulant pour sélectionner un contributor_id
+    unique_contributor_ids = sorted(self.merged_clean_df['contributor_id'].unique())
+    contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
 
-        # Appliquer les filtres
-        filtered_df = self.merged_clean_df[
-            (self.merged_clean_df['palmarès'].isin(selected_palmares)) &
-            (self.merged_clean_df['steps_category'].isin(selected_steps_category))
-        ]
+    if contributor_id:
+        self.display_contributor_data(self.merged_clean_df, contributor_id)
 
-        # Menu déroulant pour sélectionner un contributor_id
-        unique_contributor_ids = sorted(filtered_df['contributor_id'].unique())
-        contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
-
-        if contributor_id:
-            self.display_contributor_data(filtered_df, contributor_id)
 
     def display_contributor_data(self, filtered_df, contributor_id):
         """Affiche les données d'un contributor_id sélectionné."""
