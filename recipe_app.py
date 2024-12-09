@@ -68,7 +68,7 @@ class RecipeApp:
     def display_macro_ingredients_menu(self):
         """Affiche un menu déroulant pour choisir plusieurs ingrédients macro."""
         selected_macros = st.multiselect(
-            "Sélectionnez les ingrédients macro parmi la liste triée :",
+            "Sélectionnez les ingrédients parmi la liste triée :",
             options=self.ingredients_macro
         )
         return selected_macros
