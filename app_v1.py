@@ -63,7 +63,7 @@ class RecipeDashboard:
             st.header("Filtres")
             selected_palmares = st.multiselect(
                 "Filtrer par palmarès",
-                options=self.merged_clean_df['ingr'].unique(),
+                options=self.merged_clean_df['palmarès'].unique(),
                 default=self.merged_clean_df['palmarès'].unique()
             )
             selected_steps_category = st.multiselect(
