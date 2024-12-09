@@ -86,46 +86,63 @@ class RecipeDashboard:
             self.display_contributor_data(filtered_df, contributor_id)
 
     def display_contributor_data(self, filtered_df, contributor_id):
-        """Affiche les données pour un contributor_id spécifique."""
+        """Affiche les données d'un contributor_id sélectionné."""
         contributor_recipes = filtered_df[filtered_df['contributor_id'] == contributor_id]
-
         if contributor_recipes.empty:
             st.warning("Aucune recette trouvée pour ce contributor_id.")
             return
 
-        # Calculer les KPI
+        # Calcul des KPI
         palmares = contributor_recipes['palmarès'].iloc[0]
         recipe_count = contributor_recipes['id'].nunique()
+        average_rating = contributor_recipes['average_rating'].mean()
 
-        # Affichage des KPI
+        # Affichage des bulles avec les trois informations
         st.markdown(f"""
+        <style>
+        .kpi-container {{
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }}
+        .kpi-box {{
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            width: 200px;
+        }}
+        .kpi-title {{
+            font-size: 18px;
+            font-weight: bold;
+            color: #8B4513;
+        }}
+        .kpi-value {{
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #8B4513;
+        }}
+        </style>
+
         <div class="kpi-container">
             <div class="kpi-box">
                 <div class="kpi-title">Palmarès</div>
                 <div class="kpi-value">{palmares}</div>
             </div>
             <div class="kpi-box">
-                <div class="kpi-title">Nombre de Recettes</div>
+                <div class="kpi-title">Total Recettes</div>
                 <div class="kpi-value">{recipe_count}</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-title">Note Moyenne</div>
+                <div class="kpi-value">{average_rating:.2f}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Limiter à 20 recettes maximum
-        top_20_ids = contributor_recipes['id'].head(20)
-
-        # Fusionner les fichiers d'ingrédients
-        relevant_ingredients_part1 = self.ingredients_part1[self.ingredients_part1['id'].isin(top_20_ids)]
-        relevant_ingredients_part2 = self.ingredients_part2[self.ingredients_part2['id'].isin(top_20_ids)]
-        ingredients_combined = pd.concat([relevant_ingredients_part1, relevant_ingredients_part2])
-
-        # Fusionner avec les données principales
-        merged_data = pd.merge(contributor_recipes, ingredients_combined, on='id', how='inner')
-
-        # Afficher les données
-        display_data = merged_data[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category', 'ingredients']].head(20)
-        st.subheader(f"Recettes pour le contributor_id {contributor_id} (max 20 recettes)")
-        st.dataframe(display_data)
 
     def display_visualization_page(self):
         """Affiche la page de visualisation des recettes."""
