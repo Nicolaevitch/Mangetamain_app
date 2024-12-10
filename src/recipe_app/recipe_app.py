@@ -13,9 +13,9 @@ class RecipeApp:
             "parsley", "cornstarch", "carrot", "chili", "bacon", "potatoe"
         ])
         # Chemins des fichiers
-        self.file_part1 = 'id_ingredients_up_to_207226.csv'
-        self.file_part2 = 'id_ingredients_up_to_537716.csv'
-        self.main_file = 'base_light_V3.csv'
+        self.file_part1 = 'data/id_ingredients_up_to_207226.csv'
+        self.file_part2 = 'data/id_ingredients_up_to_537716.csv'
+        self.main_file = 'data/base_light_V3.csv'
         # Charger les données principales
         self.recipes_clean = self.load_main_data()
 

@@ -15,9 +15,9 @@ class RecipeDashboard:
     def load_data(self):
         """Charge les datasets nécessaires."""
         try:
-            self.merged_clean_df = pd.read_csv('base_light_V3.csv', low_memory=False)
-            self.ingredients_part1 = pd.read_csv('id_ingredients_up_to_207226.csv', low_memory=False)
-            self.ingredients_part2 = pd.read_csv('id_ingredients_up_to_537716.csv', low_memory=False)
+            self.merged_clean_df = pd.read_csv('data/base_light_V3.csv', low_memory=False)
+            self.ingredients_part1 = pd.read_csv('data/id_ingredients_up_to_207226.csv', low_memory=False)
+            self.ingredients_part2 = pd.read_csv('data/id_ingredients_up_to_537716.csv', low_memory=False)
         except Exception as e:
             st.error(f"Erreur lors du chargement des données : {e}")
             st.stop()
