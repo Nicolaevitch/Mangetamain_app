@@ -1,0 +1,43 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le workflow sur chaque push sur la branche 'main'
+  pull_request:
+    branches:
+      - main  # Déclenche aussi sur les pull requests vers la branche 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Récupère le code de ton dépôt
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'  # Assure-toi d'utiliser la bonne version de Python
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: Run tests with coverage
+        run: |
+          poetry run pytest --cov=app --cov-report=term-missing
+
+      - name: Run black to check PEP8 compliance
+        run: |
+          poetry run black --check .
+
+      - name: Type checking with mypy
+        run: |
+          poetry run mypy app/
+
+      - name: Run tests with coverage
+        run: |
+          poetry run pytest --cov=app --cov-report=term-missing
