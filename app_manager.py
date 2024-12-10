@@ -499,12 +499,49 @@ class AppManager:
 
             # Afficher le graphique dans Streamlit
             st.plotly_chart(fig, use_container_width=True)
+            
+            
+            # Ajouter un espacement de 4 lignes
+            st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
+            
+            st.markdown(
+            "**Le TSNE est un algorithme permettant de réduire la dimension d’une matrice tout en préservant les informations importantes contenues à l’intérieur. Il s'agit d'une technique non linéaire bien adaptée à l'intégration de données à haute dimension pour la visualisation dans un espace à basse dimension. Elle modélise chaque objet par un point de manière à ce que les objets similaires soient modélisés par des points proches et que les objets dissemblables soient modélisés par des points éloignés avec une probabilité élevée**.")
 
+            images = ["https://i.imghippo.com/files/NWt4811myk.PNG",
+                      "https://i.imghippo.com/files/pId6918aM.PNG",                      
+                      "https://i.imghippo.com/files/Dq5421IAg.PNG",
+                      "https://i.imghippo.com/files/INX9117lTQ.PNG", 
+                      "https://i.imghippo.com/files/xWxW1858tEI.PNG"]  # Remplacez par vos propres images
+
+            # Affichage des images avec un espacement
+            text_1 = r'''
+                            \text{La probabilité gaussienne que } x_{i} \text{ soit voisin de } x_{j} \text{est défini par }
+                            '''
+            text_2 = r'''
+                            \text{La matrice des probabilités contient donc les termes} p_{ij} \text{suivants :}  
+                            '''
+            text_3 = text_3 = r'''
+                            \text{Ensuite, nous obtenons cette équation ci-dessous qui représente la proximité entre nos données dans un espace en faible dimension, }
+                            y_{i,(1,N)} \text{qui désigne nos observations.}
+                            '''
+            text_4 = r'''
+                            \text{Enfin, l'algorithme final aura pour but de minimiser le critère suivant :} 
+                            '''
+            texts = [text_1,text_2,text_3,text_4]
+            
+            st.markdown("<br>" * 1,unsafe_allow_html=True)            
+            
+            st.markdown("*Voici quelques équations décrivant cet algorithme*",unsafe_allow_html=True)  
+            
+            for image,text in zip(images,texts):
+                st.latex(text)
+                st.image(image)  # Affiche l'image
+                st.markdown("<br>" * 1,unsafe_allow_html=True)            
+            
         except Exception as e:
             st.error(f"Erreur lors de la génération du graphique t-SNE : {e}")
-
                 
-                    # Identifier l'ingrédient dominant
+    # Identifier l'ingrédient dominant
     def get_dominant_ingredient(self, ingredient_list, selected_ingredients):
         for ingredient in selected_ingredients:
             if ingredient in ingredient_list:
