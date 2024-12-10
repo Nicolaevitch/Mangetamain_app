@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
-from recipe_app import RecipeApp
-from app_manager import AppManager
+from src.recipe_app import RecipeApp
+from src.app_manager import AppManager
 
 
 class RecipeDashboard:
