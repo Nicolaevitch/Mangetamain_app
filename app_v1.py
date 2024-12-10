@@ -152,11 +152,11 @@ class RecipeDashboard:
         # Fusionner avec les données principales
         merged_data = pd.merge(contributor_recipes, ingredients_combined, on='id', how='inner')
 
-        # Afficher les données principales
-        display_data = merged_data[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category', 'ingredients']].head(20)
+        # Ajouter l'ID des recettes et afficher les données principales
+        display_data = merged_data[['id', 'name', 'average_rating', 'minutes', 'palmarès', 'steps_category', 'ingredients']].head(20)
         st.subheader(f"Recettes pour le contributor_id {contributor_id} (max 20 recettes)")
         st.dataframe(display_data)
-
+        
         # Calcul des ingrédients les plus utilisés
         all_ingredients = merged_data['ingredients'].apply(eval).explode()
         ingredient_counts = all_ingredients.value_counts().head(10).reset_index()
@@ -165,6 +165,7 @@ class RecipeDashboard:
         # Afficher le tableau des ingrédients
         st.subheader(f"Top 10 des ingrédients les plus utilisés par {contributor_id}")
         st.dataframe(ingredient_counts)
+
         
     def display_visualization_page(self):
         """Affiche la page de visualisation des recettes."""
