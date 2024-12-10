@@ -222,15 +222,12 @@ class RecipeDashboard:
                 recipe_id = int(recipe_input)
                 st.session_state["recipe_id"] = recipe_id  # Sauvegarde de l'identifiant de recette
 
-                # Trouver les indices des recettes les plus proches
-                closest_indices = run_recipe_finder(recipe_id)
-                st.session_state["closest_indices"] = closest_indices  # Sauvegarde des indices des recettes proches
+                # Trouver les recettes proches en utilisant la fonction de recherche
+                closest_recipes = run_recipe_finder(recipe_id)
+                st.session_state["closest_recipes"] = closest_recipes  # Sauvegarde du DataFrame des recettes proches
 
                 # Afficher les 100 recettes les plus proches
                 st.write(f"Voici les 100 recettes les plus proches de la recette avec ID {recipe_id} :")
-                raw_recipes = self.merged_clean_df  # Assurez-vous que les données sont disponibles
-                closest_recipes = raw_recipes.iloc[closest_indices]
-                st.session_state["closest_recipes"] = closest_recipes  # Sauvegarde des recettes proches
                 st.dataframe(closest_recipes)
 
         # Si des recettes proches ont été trouvées, afficher les résultats
