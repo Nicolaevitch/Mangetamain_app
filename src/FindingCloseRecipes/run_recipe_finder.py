@@ -6,6 +6,34 @@ from src.FindingCloseRecipes.config import NUMERIC_FEATURES, WEIGHTS, WEIGHTS_NU
 import pandas as pd
 import numpy as np
 
+import pandas as pd
+
+def reconstruct_pp_recipes():
+    # Chargement et concaténation des fichiers par colonnes
+    tags = pd.concat([
+        pd.read_csv(f"data/pp_recipes_tags_{i}.csv") for i in range(1, 5)
+    ])
+    name = pd.concat([
+        pd.read_csv(f"data/pp_recipes_name_{i}.csv") for i in range(1, 5)
+    ])
+    steps = pd.concat([
+        pd.read_csv(f"data/pp_recipes_steps_{i}.csv") for i in range(1, 5)
+    ])
+    ingredients = pd.concat([
+        pd.read_csv(f"data/pp_recipes_ingredients_{i}.csv") for i in range(1, 5)
+    ])
+    numerics = pd.concat([
+        pd.read_csv(f"data/pp_recipes_numerics_{i}.csv") for i in range(1, 5)
+    ])
+
+    # Fusion des datasets selon la colonne "id"
+    pp_recipes = tags.merge(name, on="id", how="inner")
+    pp_recipes = pp_recipes.merge(steps, on="id", how="inner")
+    pp_recipes = pp_recipes.merge(ingredients, on="id", how="inner")
+    pp_recipes = pp_recipes.merge(numerics, on="id", how="inner")
+
+    return pp_recipes
+
 def run_recipe_finder(recipe_id):
     """
     Exécute le pipeline complet pour trouver les indices des recettes les plus proches.
@@ -14,9 +42,10 @@ def run_recipe_finder(recipe_id):
     :return: list, Indices des recettes les plus proches
     """
     # Charger les données
-    pp_recipes = pd.read_csv("data/pp_recipes.csv")
+    pp_recipes = reconstruct_pp_recipes()
 
     # Étape 1 : Vectorisation des colonnes textuelles
+
     vectorizer = RecipeVectorizer(pp_recipes)
     tfidf_name = vectorizer.vectorize_tfidf('name')
     tfidf_tags = vectorizer.vectorize_tfidf('tags')

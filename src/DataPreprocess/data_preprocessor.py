@@ -3,6 +3,7 @@ from src.DataPreprocess.normalizer import Normalizer
 from src.DataPreprocess.feat_engineering import FeatEngineering
 from src.DataPreprocess.data_cleaning import DataCleaning
 from src.DataPreprocess.vectorizer_preparator import VectorizerPreparator
+from src.DataPreprocess.split_dataset import DatasetSplitter
 
 class DataPreprocessor:
     def __init__(self, file_path, ingredient_map_path):
@@ -39,7 +40,7 @@ class DataPreprocessor:
         self.data = (
             cleaner
             .replace_zero_minutes(replacement_minutes=8)         # Remplace les 0 dans 'minutes'
-            .remove_long_recipes(max_minutes=30*24*60)          # Supprime les recettes avec un temps de préparation > 1 mois
+            .remove_long_recipes(max_minutes=24*60)            # Supprime les recettes avec un temps de préparation > 1 semaine
             .map_ingredients(self.ingredient_map_path)         # Remplace les noms d'ingrédients par des catégories
             .get_cleaned_data()
         )
@@ -83,6 +84,27 @@ class DataPreprocessor:
         # Supprime les lignes contenant des NaN à la toute fin du pipeline
         cleaner = DataCleaning(self.data)
         self.data = cleaner.handle_missing_values().get_cleaned_data()
+
+        # Étape finale : Séparation des colonnes en plusieurs datasets
+        splitter = DatasetSplitter(self.data, output_dir="data/split_datasets")
+        splitter.split_by_column(["tags", "steps", "ingredients", "name"])
+        
+        numeric_columns = ["log_minutes", "calories", "total fat (PDV%)", "sugar (PDV%)",
+                           "sodium (PDV%)", "protein (PDV%)", "saturated fat (PDV%)", "carbohydrates (PDV%)"]
+        
+        splitter.split_by_numeric_columns(numeric_columns)
+        # Liste des fichiers générés
+        datasets = [
+            "data/split_datasets/pp_recipes_tags.csv",
+            "data/split_datasets/pp_recipes_steps.csv",
+            "data/split_datasets/pp_recipes_ingredients.csv",
+            "data/split_datasets/pp_recipes_name.csv",
+            "data/split_datasets/pp_recipes_numerics.csv",
+        ]
+
+        # Diviser chaque dataset en 4 parties
+        for dataset_file in datasets:
+            splitter.split_into_parts(input_file=dataset_file, num_parts=4)
 
         return self.data
 
