@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 from src.recipe_app.recipe_app import RecipeApp
 from src.app_manager.app_manager import AppManager
-
+from src.FindingCloseRecipes.run_recipe_finder import run_recipe_finder  # Import de la fonction pour la recherche de recettes proches
 
 class RecipeDashboard:
     def __init__(self):
@@ -166,51 +166,40 @@ class RecipeDashboard:
         st.subheader(f"Top 10 des ingrédients les plus utilisés par {contributor_id}")
         st.dataframe(ingredient_counts)
 
+    def display_recipe_search_page(self):
+        """Affiche la page de recherche de recettes proches."""
+        st.title("Recherche de Recettes Proches 🍽️")
 
-    def display_visualization_page(self):
-        """Affiche la page de visualisation des recettes."""
-        st.subheader("Visualisation de mes recettes")
+        # Saisie de l'ID de la recette
+        recipe_input = st.text_input("Entrez l'identifiant de la recette :", "")
 
-        # Étape 1 : Fusionner les fichiers d'ingrédients
-        ingredients = pd.concat([self.ingredients_part1, self.ingredients_part2], ignore_index=True)
-
-        # Convertir les colonnes en listes (si nécessaire)
-        ingredients['ingredients'] = ingredients['ingredients'].apply(eval)
-
-        # Étape 2 : Fusionner avec les données principales
-        merged_clean_df = pd.merge(self.merged_clean_df, ingredients, on='id', how='inner')
-
-        # Étape 3 : Nettoyer les colonnes inutiles
-        merged_clean_df = merged_clean_df[['id', 'name', 'ingredients', 'contributor_id']]
-
-        # Sélectionner un contributor_id
-        unique_contributor_ids = sorted(merged_clean_df['contributor_id'].unique())
-        contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
-
-        if contributor_id:
-            # Filtrer les recettes pour le contributor_id
-            filtered_recipes = merged_clean_df[merged_clean_df['contributor_id'] == contributor_id]
-
-            # Sélectionner les macros
-            app = RecipeApp()
-            selected_macros = st.multiselect(
-                "Sélectionnez les ingrédients macro parmi la liste triée :",
-                options=app.ingredients_macro
-            )
-
-            if selected_macros:
-                self.manager.perform_tsne_with_streamlit(
-                    recipes=filtered_recipes,
-                    selected_ingredients=selected_macros,
-                    contributor_id=contributor_id
-                )
+        if st.button("Valider cette recette"):
+            if not recipe_input.isdigit():
+                st.warning("Veuillez entrer un identifiant de recette valide.")
             else:
-                st.warning("Veuillez sélectionner au moins un ingrédient.")
+                recipe_id = int(recipe_input)
+                st.session_state["recipe_id"] = recipe_id  # Sauvegarde de l'identifiant de recette
+
+                # Trouver les indices des recettes les plus proches
+                closest_indices = run_recipe_finder(recipe_id)
+                st.session_state["closest_indices"] = closest_indices  # Sauvegarde des indices des recettes proches
+
+                # Afficher les 100 recettes les plus proches
+                st.write(f"Voici les 100 recettes les plus proches de la recette avec ID {recipe_id} :")
+                raw_recipes = self.merged_clean_df  # Assurez-vous que les données sont disponibles
+                closest_recipes = raw_recipes.iloc[closest_indices]
+                st.session_state["closest_recipes"] = closest_recipes  # Sauvegarde des recettes proches
+                st.dataframe(closest_recipes)
+
+        # Si des recettes proches ont été trouvées, afficher les résultats
+        if "closest_recipes" in st.session_state:
+            st.markdown("### Recettes les plus proches")
+            st.dataframe(st.session_state["closest_recipes"])
 
     def run(self):
         """Lance l'application Streamlit."""
         self.add_custom_styles()
-        menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !", "Représentation des recettes"], index=0)
+        menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !", "Représentation des recettes", "Recherche de Recettes Proches"], index=0)
 
         if menu == "Accueil":
             self.display_home_page()
@@ -219,7 +208,8 @@ class RecipeDashboard:
             app.run()
         elif menu == "Représentation des recettes":
             self.display_visualization_page()
-
+        elif menu == "Recherche de Recettes Proches":
+            self.display_recipe_search_page()
 
 if __name__ == "__main__":
     dashboard = RecipeDashboard()
