@@ -23,7 +23,7 @@ class RecipeApp:
     @st.cache_data
     def load_main_data():
         """Charge les données principales depuis base_light_V3."""
-        return pd.read_csv('base_light_V3.csv', low_memory=False)
+        return pd.read_csv('data/base_light_V3.csv', low_memory=False)
 
     def get_ingredients_data(self):
         """Charge et combine les données des deux fichiers d'ingrédients."""
