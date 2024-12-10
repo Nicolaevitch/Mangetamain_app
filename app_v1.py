@@ -165,6 +165,47 @@ class RecipeDashboard:
         # Afficher le tableau des ingrédients
         st.subheader(f"Top 10 des ingrédients les plus utilisés par {contributor_id}")
         st.dataframe(ingredient_counts)
+        
+    def display_visualization_page(self):
+        """Affiche la page de visualisation des recettes."""
+        st.subheader("Visualisation de mes recettes")
+
+        # Étape 1 : Fusionner les fichiers d'ingrédients
+        ingredients = pd.concat([self.ingredients_part1, self.ingredients_part2], ignore_index=True)
+
+        # Convertir les colonnes en listes (si nécessaire)
+        ingredients['ingredients'] = ingredients['ingredients'].apply(eval)
+
+        # Étape 2 : Fusionner avec les données principales
+        merged_clean_df = pd.merge(self.merged_clean_df, ingredients, on='id', how='inner')
+
+        # Étape 3 : Nettoyer les colonnes inutiles
+        merged_clean_df = merged_clean_df[['id', 'name', 'ingredients', 'contributor_id']]
+
+        # Sélectionner un contributor_id
+        unique_contributor_ids = sorted(merged_clean_df['contributor_id'].unique())
+        contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
+
+        if contributor_id:
+            # Filtrer les recettes pour le contributor_id
+            filtered_recipes = merged_clean_df[merged_clean_df['contributor_id'] == contributor_id]
+
+            # Sélectionner les macros
+            app = RecipeApp()
+            selected_macros = st.multiselect(
+                "Sélectionnez les ingrédients macro parmi la liste triée :",
+                options=app.ingredients_macro
+            )
+
+            if selected_macros:
+                self.manager.perform_tsne_with_streamlit(
+                    recipes=filtered_recipes,
+                    selected_ingredients=selected_macros,
+                    contributor_id=contributor_id
+                )
+            else:
+                st.warning("Veuillez sélectionner au moins un ingrédient.")
+
 
     def display_recipe_search_page(self):
         """Affiche la page de recherche de recettes proches."""
