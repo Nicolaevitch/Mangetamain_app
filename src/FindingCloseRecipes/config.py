@@ -1,3 +1,4 @@
+# config.py
 NUMERIC_FEATURES = [
     'log_minutes',
     'calories',
@@ -9,15 +10,7 @@ NUMERIC_FEATURES = [
     'carbohydrates (PDV%)'
 ]
 
-WEIGHTS = {
-    'name': 0.25,
-    'tags': 0.2,
-    'steps': 0.25,
-    'ingredients': 0.25,
-    'numeric': 0.05
-}
-
-WEIGHTS_NUM = {
+DEFAULT_WEIGHTS = {
     'log_minutes': 0.5,
     'calories': 0.2,
     'total fat (PDV%)': 0.05,
@@ -27,3 +20,14 @@ WEIGHTS_NUM = {
     'saturated fat (PDV%)': 0.05,
     'carbohydrates (PDV%)': 0.05
 }
+
+COMBINED_WEIGHTS = {
+    "alpha": 0.05,  # 'name'
+    "beta": 0.3,    # 'tags'
+    "gamma": 0.3,   # 'steps'
+    "delta": 0.3,   # 'ingredients'
+    "epsilon": 0.05  # numeric features
+}
+
+TOP_N = 100  # Nombre de recettes similaires
+

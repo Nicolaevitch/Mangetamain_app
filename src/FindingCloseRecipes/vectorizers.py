@@ -1,21 +1,16 @@
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+# vectorizers.py
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
-class RecipeVectorizer:
-    def __init__(self, recipes_df):
-        self.recipes_df = recipes_df
-        self.vectorizers = {}
-
-    def vectorize_tfidf(self, column_name):
-        """Vectorisation TF-IDF pour une colonne donnée."""
+class Vectorizer:
+    @staticmethod
+    def tfidf_vectorize(column_data):
         vectorizer = TfidfVectorizer()
-        tfidf_matrix = vectorizer.fit_transform(self.recipes_df[column_name])
-        self.vectorizers[column_name] = vectorizer
-        return tfidf_matrix  # Retourne une matrice sparse
+        tfidf_matrix = vectorizer.fit_transform(column_data)
+        return tfidf_matrix, vectorizer  # Retourner la matrice sparse et le vectorizer
 
-    def vectorize_bow(self, column_name):
-        """Vectorisation Bag of Words pour une colonne donnée."""
+    @staticmethod
+    def bow_vectorize(column_data):
         vectorizer = CountVectorizer()
-        bow_matrix = vectorizer.fit_transform(self.recipes_df[column_name])
-        self.vectorizers[column_name] = vectorizer
-        return bow_matrix  # Retourne une matrice sparse
+        bow_matrix = vectorizer.fit_transform(column_data)
+        return bow_matrix, vectorizer  # Retourner la matrice sparse et le vectorizer
