@@ -8,13 +8,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-streamlit = "^1.39.0"
+streamlit = "^1.40.2"
 numpy = "^2.1.1"
 pandas = "^2.2.3"
-scikit-learn = "^1.5.2"
+scikit-learn = "^1.6.0"
 plotly = "^5.24.1"
-matplotlib = "^3.9.2"
+matplotlib = "^3.9.3"
 seaborn = "^0.13.2"
+pillow = "^11.0.0"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.dev.dependencies]
