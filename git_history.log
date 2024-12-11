@@ -1,0 +1,203 @@
+commit e9a72ef792201306d62326516d9e80a174ef0380
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 19:35:00 2024 +0100
+
+    readme
+
+commit f73b6455ed49520edd46b2f17458f19679066b82
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 19:25:12 2024 +0100
+
+    requi
+
+commit d7198d008e409aa1607d973bf73f20cb08cd83d7
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 19:20:30 2024 +0100
+
+    requi
+
+commit 70d7c8e626dd418ea33d359d942e0db55e8386b2
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 19:17:29 2024 +0100
+
+    requi
+
+commit 2e0c2d3a31079cd35a037488618cc522be38800b
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 19:13:25 2024 +0100
+
+    upd
+
+commit fa96f0c74973ced53bc5ea1f242423d9164880f8
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 18:34:44 2024 +0100
+
+    Ajout du requirements.txt pour gestion classique des dépendances
+
+commit 93e224aaf6c032273f57fc1949c55a74ab9c0247
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 18:13:42 2024 +0100
+
+    poetry new
+
+commit 6f0f1a5a536d89f7de8495630a7c51ea8675af82
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 18:04:14 2024 +0100
+
+    rm requi
+
+commit 3f479bda8f3027bede9d341e34642de1c30f2f4d
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 17:53:46 2024 +0100
+
+    Désactivation du mode package et mise à jour des dépendances
+
+commit 06a39f46cd0b6c0dabbd59ece38a4472f4f07ae4
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 17:50:43 2024 +0100
+
+    pyproject opt fault package
+
+commit b75b116668f79f17a436c073e6d761c28a1a8a08
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 17:43:57 2024 +0100
+
+    init2
+
+commit a9a0445351854c77bc95fb378dc14fbdfbe6dcfb
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 17:36:54 2024 +0100
+
+    init
+
+commit 840fad059485607708ab30d42d523d1fc729f1f0
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 17:33:26 2024 +0100
+
+    Remove requirements.txt to use Poetry
+
+commit d723715a584533c4917a625f93bb28c670877d09
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 17:25:30 2024 +0100
+
+    requirement poetry
+
+commit 7fac88ebfaf4eaa836c5c79e646951a11925f990
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 17:19:52 2024 +0100
+
+    readme
+
+commit 8db11a82bdac0ff30850430f4cb8f548915c1cb1
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 16:24:41 2024 +0100
+
+    app
+
+commit 5a0a4c8fecf024ad127c423a7c8ecef601f53025
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 16:21:49 2024 +0100
+
+    app et readme
+
+commit 4d357aaad67ac4dfb54f6aa599c3de192a10dc32
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 16:13:02 2024 +0100
+
+    readme
+
+commit 73d8a7b010ecf7b31b2c420cfbc24528a89fe6e8
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 15:56:01 2024 +0100
+
+    run test 10f
+
+commit 0afe48b14be1194f55eb28ae5597c7d5543a7dfd
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 15:55:09 2024 +0100
+
+    test uni
+
+commit 91f8602a33abee74a5e53a25fd25d8080c41a16a
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 15:01:48 2024 +0100
+
+    test uni recipe_app
+
+commit c1370d1198a6ae7b9fb96f3d479e13436412fc56
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 14:39:09 2024 +0100
+
+    Mise à jour de la documentation Sphinx et génération des nouveaux fichiers HTML
+
+commit fb54446d1199ab37a8fd077a6d5293c483efffa5
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 14:29:45 2024 +0100
+
+    test cov
+
+commit 5da3fb50637d4af7e465f8a837f99e66ddf02913
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 14:13:32 2024 +0100
+
+    test
+
+commit ca128ec3e015cf65b1f3a0f27bac1a41760d3338
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 14:10:55 2024 +0100
+
+    Peut être le dernier commit ?
+
+commit 11ed52bba8556decf052fc18f1f308272f135b60
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 14:06:01 2024 +0100
+
+    logs et test
+
+commit ca4e9e7453b1003b77a79584dd7aa2bec15898ad
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 13:47:34 2024 +0100
+
+    testuni
+
+commit 67fe8ccb45e2400156bdddbe4327f7864118f471
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 13:01:58 2024 +0100
+
+    test recipeapp
+
+commit eb603052994384c93e3c9cbb20fad949fb9199fd
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 12:52:45 2024 +0100
+
+    build
+
+commit 6b7749f26b190025448a77e04bc87f79e9842c63
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 12:48:33 2024 +0100
+
+    sphing et readme
+
+commit ada3ab2d0af785215bf51e7b8dae89a5b466febd
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 12:32:40 2024 +0100
+
+    recipe_app log
+
+commit ef2c8b130df4b9c0504c41cde640a26f511ac576
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 12:29:24 2024 +0100
+
+    appv1
+
+commit eab93e319a65924020a61e7f84385c612ef429c1
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 12:21:57 2024 +0100
+
+    appv1 et logs
+
+commit 8a284f55ce9eb4e50ec276f98cdce67620bb56de
+Author: root <root@LAPTOP-G2B5HK76>
+Date:   Wed Dec 11 11:47:35 2024 +0100
+
+    app
