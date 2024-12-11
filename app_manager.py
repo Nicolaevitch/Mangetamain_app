@@ -488,9 +488,9 @@ class AppManager:
                     showgrid=True, 
                     zeroline=False
                 ),
-                legend_title="Dominant Ingredient",  # Titre de la légende
+                legend_title="Ingrédient Dominant",  # Titre de la légende
                 title=dict(
-                    text="t-SNE Visualization of Recipes",  # Texte du titre
+                    text="Visualisation des recettes par la t-SNE",  # Texte du titre
                     font=dict(size=16),
                     x=0.5,  # Centrer le titre horizontalement
                     xanchor='center'  # Ancrage du titre centré
@@ -505,7 +505,8 @@ class AppManager:
             st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
             
             st.markdown(
-            "**Le TSNE est un algorithme permettant de réduire la dimension d’une matrice tout en préservant les informations importantes contenues à l’intérieur. Il s'agit d'une technique non linéaire bien adaptée à l'intégration de données à haute dimension pour la visualisation dans un espace à basse dimension. Elle modélise chaque objet par un point de manière à ce que les objets similaires soient modélisés par des points proches et que les objets dissemblables soient modélisés par des points éloignés avec une probabilité élevée**.")
+            "**t-SNE (t-Distributed Stochastic Neighbor Embedding)** est un algorithme de réduction de dimensionnalité non linéaire. Il est particulièrement efficace pour projeter des données à haute dimension dans un espace à faible dimension, tout en préservant les structures locales et globales des données.L'objectif principal de t-SNE est de représenter chaque objet des données d'origine par un point dans un espace de plus faible dimension, de manière à ce que les objets similaires soient représentés par des points proches et les objets dissemblables soient représentés par des points éloignés avec une forte probabilité.")
+            st.markdown("Cette technique est largement utilisée pour la visualisation de données complexes, telles que des jeux de données textuels, des images ou des vecteurs d'embedding. Elle repose sur la modélisation des relations de voisinage entre les points, en utilisant une mesure de similarité basée sur des distributions de probabilité, et optimise ces relations dans l'espace projeté.")
 
             images = ["https://i.imghippo.com/files/NWt4811myk.PNG",
                       "https://i.imghippo.com/files/pId6918aM.PNG",                      
@@ -515,17 +516,16 @@ class AppManager:
 
             # Affichage des images avec un espacement
             text_1 = r'''
-                            \text{La probabilité gaussienne que } x_{i} \text{ soit voisin de } x_{j} \text{est défini par }
+                            \text{La probabilité gaussienne qu'une observation } x_{i} \text{ soit voisine de } x_{j} \text{est définie par }
                             '''
             text_2 = r'''
-                            \text{La matrice des probabilités contient donc les termes} p_{ij} \text{suivants :}  
+                            \text{La matrice des probabilités jointes contient les termes } p_{ij} \text{suivants :}  
                             '''
-            text_3 = text_3 = r'''
-                            \text{Ensuite, nous obtenons cette équation ci-dessous qui représente la proximité entre nos données dans un espace en faible dimension, }
-                            y_{i,(1,N)} \text{qui désigne nos observations.}
-                            '''
+            text_3 = r'''
+                            \text{Ensuite, cette formule ci-dessous représente la proximité entre nos données dans un espace en faible dimension, notées } \{ \mathbf{y}_i \}_{i=1}^n
+                      '''
             text_4 = r'''
-                            \text{Enfin, l'algorithme final aura pour but de minimiser le critère suivant :} 
+                            \text{L'algorithme final aura pour but de minimiser le critère suivant :} 
                             '''
             texts = [text_1,text_2,text_3,text_4]
             
@@ -549,10 +549,3 @@ class AppManager:
         return 'Other'
 
 
-
-# Exemple d'appel
-#app_manager = AppManager()
-#recipes = pd.read_csv("pp_recipes_cleaned.csv")
-#contributor_id = 133174
-#selected_ingredients = ['salt', 'pepper']
-#app_manager.perform_tsne(recipes, selected_ingredients, contributor_id)
