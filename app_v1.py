@@ -55,28 +55,11 @@ class RecipeDashboard:
         st.markdown(page_bg_img, unsafe_allow_html=True)
 
     def display_home_page(self):
-        """Affiche la page d'accueil avec les filtres et les données filtrées."""
+        """Affiche la page d'accueil sans les filtres sur la barre latérale."""
         st.title("Bienvenue sur ton profil de recettes !")
 
-        # Ajouter des filtres dans la barre latérale
-        with st.sidebar:
-            st.header("Filtres")
-            selected_palmares = st.multiselect(
-                "Filtrer par palmarès",
-                options=self.merged_clean_df['palmarès'].unique(),
-                default=self.merged_clean_df['palmarès'].unique()
-            )
-            selected_steps_category = st.multiselect(
-                "Filtrer par catégorie de steps",
-                options=self.merged_clean_df['steps_category'].unique(),
-                default=self.merged_clean_df['steps_category'].unique()
-            )
-
-        # Appliquer les filtres
-        filtered_df = self.merged_clean_df[
-            (self.merged_clean_df['palmarès'].isin(selected_palmares)) &
-            (self.merged_clean_df['steps_category'].isin(selected_steps_category))
-        ]
+        # Appliquer directement le DataFrame filtré sans afficher de filtres dans l'interface
+        filtered_df = self.merged_clean_df
 
         # Menu déroulant pour sélectionner un contributor_id
         unique_contributor_ids = sorted(filtered_df['contributor_id'].unique())
