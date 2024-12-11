@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
-from recipe_app import RecipeApp, IngredientDataError
+from src.recipe_app.recipe_app import RecipeApp, IngredientDataError
 
 
 class TestRecipeApp(unittest.TestCase):
