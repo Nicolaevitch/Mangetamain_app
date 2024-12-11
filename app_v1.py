@@ -7,10 +7,10 @@ from src.app_manager.app_manager import AppManager
 from src.FindingCloseRecipes.run_recipe_finder import run_recipe_finder  # Import de la fonction pour la recherche de recettes proches
 
 # Configurer les loggers
-logging.basicConfig(level=logging.DEBUG, filename='debug.log', filemode='w',
+logging.basicConfig(level=logging.DEBUG, filename='logs/debug.log', filemode='w',
                     format='%(asctime)s - %(levelname)s - %(message)s')
 error_logger = logging.getLogger('error_logger')
-error_handler = logging.FileHandler('error.log')
+error_handler = logging.FileHandler('logs/error.log')
 error_handler.setLevel(logging.ERROR)
 error_logger.addHandler(error_handler)
 
