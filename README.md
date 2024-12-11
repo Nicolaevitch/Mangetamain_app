@@ -1,18 +1,42 @@
 # Mangetamain_app
 application mangetamain
 Bienvenue sur l'application Mangetamain ! 
-Quatre pages de recettes s'offrent à toi :
 
--Page d'accueil 
-Elle te permet de suivre ton activité grâce à ton id.
+## Utilisation
+Accédez à l'application directement via ce lien :
 
--Idée recette ! 
-En renseignant des ingrédients, tu trouveras des idées de recettes contenant les 
-ingrédients choisis. 
+👉 **[Mangetamain.app](https://mangetamainapp-main.streamlit.app/)**
+## Installation
+Si vous souhaitez exécuter ce projet localement :
 
--Représentation de recette
+1. Clonez le dépôt GitHub :
+   ```bash
+   git clone https://github.com/Nicolaevitch/Mangetamain_app.git
 
--Recherche de recettes proches :
+2. Executer poetry install sur votre terminal local lié à votre github.
+
+## Exécution locale
+Pour lancer l'application localement :
+
+1. Exécutez la commande suivante :
+   ```bash
+   streamlit run src/app.py
+   ```
+2. Ouvrez le lien local généré dans votre navigateur.
+
+## Déploiement
+L'application est déployée sur Streamlit Cloud. Si vous souhaitez effectuer des modifications :
+
+1. Poussez vos changements sur le dépôt GitHub.
+2. Les mises à jour seront automatiquement déployées.
+
+### Fonctionnalités principales :
+- Explorez des recettes interactives.
+- Filtrez et recherchez des recettes par ingrédients et catégories.
+- Visualisez des données et analyses avancées :             
+Le TSNE est un algorithme permettant de réduire la dimension d’une matrice tout en préservant les informations importantes contenues à l’intérieur. Il s'agit d'une technique non linéaire bien adaptée à l'intégration de données à haute dimension pour la visualisation dans un espace à basse dimension. Elle modélise chaque objet par un point de manière à ce que les objets similaires soient modélisés par des points proches et que les objets dissemblables soient modélisés par des points éloignés avec une probabilité élevée.
+
+- Recherche de recettes proches :
 A l'adresse de la personne en charge de l'application:
 
 Lorsque de nouvelles recettes sont arrivées dans le fichier Raw_recipes.csv , vous pouvez lancer le fichier run_preprocessing.py
@@ -30,3 +54,4 @@ Ce preprocessing est nécessaire pour le calcul des distances entre recettes et 
 - Divise le dataset final en plusieurs fichiers CSV pour une gestion via Streamlit Cloud
 - Division par colonnes textuelles ou numériques.
 - Découpage en plusieurs parties pour les grands fichiers.
+
