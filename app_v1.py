@@ -2,10 +2,8 @@ import pandas as pd
 import streamlit as st
 from recipe_app import RecipeApp
 from app_manager import AppManager
-from tsne_module import RecipeTSNE
 
 
-<<<<<<< HEAD
 class RecipeDashboard:
     def __init__(self):
         self.merged_clean_df = None
@@ -13,9 +11,6 @@ class RecipeDashboard:
         self.ingredients_part2 = None
         self.manager = AppManager()
         self.load_data()
-=======
-tsne_manager = RecipeTSNE()
->>>>>>> 0d1e481 (Votre message de commit ici)
 
     def load_data(self):
         """Charge les datasets nécessaires."""
@@ -63,7 +58,6 @@ tsne_manager = RecipeTSNE()
         """Affiche la page d'accueil avec les filtres et les données filtrées."""
         st.title("Bienvenue sur ton profil de recettes !")
 
-<<<<<<< HEAD
         # Ajouter des filtres dans la barre latérale
         with st.sidebar:
             st.header("Filtres")
@@ -83,136 +77,6 @@ tsne_manager = RecipeTSNE()
             (self.merged_clean_df['palmarès'].isin(selected_palmares)) &
             (self.merged_clean_df['steps_category'].isin(selected_steps_category))
         ]
-=======
-# Créer le menu pour changer de page
-menu = st.sidebar.radio("**_Menu_**", ["Accueil", "Idée recette !","Représentation des recettes"], index=0)
-
-if menu == "Accueil":
-    # Titre de l'application
-    st.title("Recherche des meilleures recettes")
-
-    # Ajout de filtres interactifs (placés à droite)
-    with st.sidebar:
-        st.header("Filtres")
-        selected_palmares = st.multiselect(
-            "Filtrer par palmarès",
-            options=merged_clean_df['palmarès'].unique(),
-            default=merged_clean_df['palmarès'].unique()
-        )
-
-        selected_steps_category = st.multiselect(
-            "Filtrer par catégorie de steps",
-            options=merged_clean_df['steps_category'].unique(),
-            default=merged_clean_df['steps_category'].unique()
-        )
-
-    # Appliquer les filtres
-    filtered_df = merged_clean_df[
-        (merged_clean_df['palmarès'].isin(selected_palmares)) & 
-        (merged_clean_df['steps_category'].isin(selected_steps_category))
-    ]
-
-    # Menu déroulant pour sélectionner un contributor_id
-    unique_contributor_ids = sorted(filtered_df['contributor_id'].unique())
-    contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
-
-    # Vérifier si un contributor_id est sélectionné
-    if contributor_id:
-        # Filtrer les données pour le contributor_id
-        contributor_recipes = filtered_df[filtered_df['contributor_id'] == contributor_id]
-
-        if not contributor_recipes.empty:
-            # Limiter à 20 recettes maximum
-            top_20_ids = contributor_recipes['id'].head(20)
-
-            # Filtrer les fichiers d'ingrédients pour les IDs sélectionnés
-            relevant_ingredients_part1 = ingredients_part1[ingredients_part1['id'].isin(top_20_ids)]
-            relevant_ingredients_part2 = ingredients_part2[ingredients_part2['id'].isin(top_20_ids)]
-
-            # Fusionner les deux datasets d'ingrédients
-            ingredients_combined = pd.concat([relevant_ingredients_part1, relevant_ingredients_part2])
-
-            # Fusionner avec les données principales
-            merged_data = pd.merge(contributor_recipes, ingredients_combined, on='id', how='inner')
-
-            # Sélectionner les colonnes importantes
-            display_data = merged_data[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category', 'ingredients']].head(20)
-
-            # Afficher les données
-            st.subheader(f"Recettes pour le contributor_id {contributor_id} (max 20 recettes)")
-            st.dataframe(display_data)
-        else:
-            st.warning("Aucune recette trouvée pour ce contributor_id.")
-
-    # Afficher les données filtrées avec les filtres interactifs
-    st.subheader("Recettes filtrées selon vos critères")
-    st.dataframe(filtered_df[['name', 'average_rating', 'minutes', 'palmarès', 'steps_category']].head(10))
-
-elif menu == "Idée recette !":
-    # Titre de la page
-    st.title("Idée recette !")
-    st.markdown('<div class="stTextContainer">Ici, vous pouvez explorer de nouvelles idées de recettes.</div>', unsafe_allow_html=True)
-
-    # Instancier et exécuter RecipeApp
-    app = RecipeApp()
-    app.run()
-
-elif menu == 'Représentation des recettes':
-    # Instancier le gestionnaire d'application
-    app = RecipeApp()
-
-      # Étape 1 : Fusionner les fichiers d'ingrédients
-    # Concaténer les fichiers, en supposant qu'ils ont les mêmes colonnes
-    ingredients = pd.concat([ingredients_part1, ingredients_part2], ignore_index=True)
-
-    # Assurez-vous que les colonnes 'ingredients' sont des listes (non du texte brut)
-    # Supposons que les ingrédients sont encodés en texte brut dans les fichiers CSV :
-    ingredients['ingredients'] = ingredients['ingredients'].apply(eval)
-
-    # Étape 2 : Fusionner avec le DataFrame principal sur la clé 'id'
-    merged_clean_df = pd.merge(
-        merged_clean_df,
-        ingredients,
-        on='id',
-        how='inner'
-    )
-
-    # Étape 3 : Nettoyer les colonnes inutiles
-    merged_clean_df = merged_clean_df[['id', 'name', 'ingredients', 'contributor_id']]
-    
-    # Appliquer les filtres
-    unique_contributor_ids = sorted(merged_clean_df['contributor_id'].unique())
-    
-    st.subheader("Visualisation de mes recettes")
-    
-    # Ajouter un espacement de 4 lignes
-    st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    
-    contributor_id = st.selectbox("Sélectionnez un contributor_id :", options=unique_contributor_ids)
-
-    if contributor_id:
-        # Filtrer les données pour le contributor_id
-        filtered_recipes = merged_clean_df[merged_clean_df['contributor_id'] == contributor_id]
-
-
-        selected_macros = st.multiselect(
-            "Sélectionnez les ingrédients macro parmi la liste triée :",
-            options=app.ingredients_macro
-        )
-
-        # Assurez-vous que les ingrédients sont sélectionnés avant d'appeler t-SNE
-        if selected_macros:
-            tsne_manager.perform_tsne_with_streamlit(
-                recipes=filtered_recipes,  # Passez tout le DataFrame ici
-                selected_ingredients=selected_macros,  # Ingrédients sélectionnés
-                contributor_id=contributor_id  # ID du contributeur sélectionné
-            )
-        else:
-            st.warning("Veuillez sélectionner au moins un ingrédient.")
-    
-            
-
->>>>>>> 0d1e481 (Votre message de commit ici)
 
         # Menu déroulant pour sélectionner un contributor_id
         unique_contributor_ids = sorted(filtered_df['contributor_id'].unique())
