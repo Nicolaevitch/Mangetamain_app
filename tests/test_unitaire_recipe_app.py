@@ -1,6 +1,12 @@
 import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
+import sys
+import os
+
+# Ajouter le dossier src au chemin Python
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
 from src.recipe_app.recipe_app import RecipeApp, IngredientDataError
 
 
@@ -9,7 +15,7 @@ class TestRecipeApp(unittest.TestCase):
 
     def setUp(self):
         """Initialisation avec des mocks pour les données."""
-        with patch('recipe_app.RecipeApp.load_main_data') as mock_load_main_data:
+        with patch('src.recipe_app.recipe_app.RecipeApp.load_main_data') as mock_load_main_data:
             mock_load_main_data.return_value = pd.DataFrame({
                 'id': [1, 2],
                 'name': ['Recipe 1', 'Recipe 2']
