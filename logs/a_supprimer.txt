@@ -1,0 +1,8 @@
+pandas
+streamlit
+matplotlib
+seaborn
+scikit-learn
+pillow
+plotly
+requests
