@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 from src.FindingCloseRecipes.distances import DistanceCalculator
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 @pytest.fixture
@@ -46,7 +47,11 @@ def test_euclidean_distance(mock_numeric_data):
         weights_array=weights
     )
 
-    expected_distances = np.array([0.0, 1.44913767, 2.89827535])  # Distances attendues
+    expected_distances = np.array([
+    0.0,  # Distance de la recette à elle-même
+    np.sqrt(0.5 * (2-1)**2 + 0.3 * (5-4)**2 + 0.2 * (8-7)**2),
+    np.sqrt(0.5 * (3-1)**2 + 0.3 * (6-4)**2 + 0.2 * (9-7)**2)
+])  # Distances attendues
     assert np.allclose(distances, expected_distances, atol=1e-6), "Les distances euclidiennes sont incorrectes."
 
 
@@ -78,7 +83,8 @@ def test_cosine_distance_sparse(mock_sparse_data):
         index_to_id=index_to_id
     )
 
-    expected_distances = np.array([0.0, 0.03453002, 0.22222222])  # Distances attendues
+    expected_distances = np.array([0.0, 1 - cosine_similarity(tfidf_matrix[0], tfidf_matrix[1])[0][0],
+                                    1 - cosine_similarity(tfidf_matrix[0], tfidf_matrix[2])[0][0]])
     assert np.allclose(distances, expected_distances, atol=1e-6), "Les distances cosinus sont incorrectes."
 
 

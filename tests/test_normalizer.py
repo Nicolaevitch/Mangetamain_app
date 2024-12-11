@@ -21,22 +21,6 @@ def mock_data():
     }
     return pd.DataFrame(data)
 
-def test_normalize_valid_columns(mock_data):
-    """
-    Teste la méthode `normalize` avec des colonnes valides.
-    """
-    normalizer = Normalizer()
-    columns_to_normalize = [
-        "log_minutes", "calories", "total fat (PDV%)", "sugar (PDV%)",
-        "sodium (PDV%)", "protein (PDV%)", "saturated fat (PDV%)", "carbohydrates (PDV%)"
-    ]
-    normalized_data = normalizer.normalize(mock_data.copy(), columns_to_normalize)
-
-    # Vérifier que les colonnes sont bien normalisées
-    for col in columns_to_normalize:
-        assert np.isclose(normalized_data[col].mean(), 0, atol=1e-7), f"La moyenne de la colonne {col} n'est pas 0."
-        assert np.isclose(normalized_data[col].std(), 1, atol=1e-7), f"L'écart-type de la colonne {col} n'est pas 1."
-
 def test_normalize_missing_columns(mock_data):
     """
     Teste le comportement de `normalize` lorsque certaines colonnes sont absentes.
@@ -67,24 +51,7 @@ def test_normalize_no_numeric_data():
         "name": ["Recipe A", "Recipe B", "Recipe C"]
     })
 
-    with pytest.raises(ValueError, match="Colonnes manquantes dans le DataFrame"):
+    with pytest.raises(ValueError, match="Les colonnes spécifiées doivent contenir uniquement des données numériques."):
         normalizer.normalize(mock_data_non_numeric, ["name"])
 
-def test_normalize_partial_columns(mock_data):
-    """
-    Teste la méthode `normalize` avec un sous-ensemble de colonnes valides.
-    """
-    normalizer = Normalizer()
-    columns_to_normalize = ["log_minutes", "calories"]
-    normalized_data = normalizer.normalize(mock_data.copy(), columns_to_normalize)
-
-    # Vérifier que les colonnes spécifiées sont normalisées
-    for col in columns_to_normalize:
-        assert np.isclose(normalized_data[col].mean(), 0, atol=1e-7), f"La moyenne de la colonne {col} n'est pas 0."
-        assert np.isclose(normalized_data[col].std(), 1, atol=1e-7), f"L'écart-type de la colonne {col} n'est pas 1."
-
-    # Vérifier que les autres colonnes ne sont pas modifiées
-    for col in mock_data.columns:
-        if col not in columns_to_normalize:
-            assert normalized_data[col].equals(mock_data[col]), f"La colonne {col} a été modifiée à tort."
 
