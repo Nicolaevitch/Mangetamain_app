@@ -13,31 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Étape 1 : Récupérer le code du dépôt
       - name: Checkout code
-        uses: actions/checkout@v2  # Récupère le code de ton dépôt
+        uses: actions/checkout@v3  # Version mise à jour
 
+      # Étape 2 : Configurer Python
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4  # Version mise à jour
         with:
-          python-version: '3.12'  # Assure-toi d'utiliser la bonne version de Python
+          python-version: '3.12'  # Version Python utilisée
 
-      - name: Install Poetry
+      # Étape 3 : Installer Poetry et les dépendances
+      - name: Install Poetry and dependencies
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
-          poetry install
+          poetry install --no-root  # Évite d'installer le projet en tant que package
 
+      # Étape 4 : Lancer les tests avec couverture
       - name: Run tests with coverage
         run: |
           poetry run pytest --cov=app --cov-report=term-missing
 
-      - name: Run black to check PEP8 compliance
+      # Étape 5 : Vérification du formatage avec Black
+      - name: Check PEP8 compliance with Black
         run: |
           poetry run black --check .
 
-      - name: Type checking with mypy
+      # Étape 6 : Vérification des types avec MyPy
+      - name: Type checking with MyPy
         run: |
           poetry run mypy app/
-
-      - name: Run tests with coverage
-        run: |
-          poetry run pytest --cov=app --cov-report=term-missing
