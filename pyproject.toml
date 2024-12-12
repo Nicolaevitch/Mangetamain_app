@@ -17,7 +17,7 @@ matplotlib = "^3.9.3"
 seaborn = "^0.13.2"
 pillow = "^11.0.0"
 requests = "^2.32.3"
-
+nltk = "^3.8"  # Ajouté ici, au lieu de la deuxième section
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
@@ -33,6 +33,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
-
-[tool.poetry.dependencies]
-nltk = "^3.8"
