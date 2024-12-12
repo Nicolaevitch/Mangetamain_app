@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 import ast
-from typing import Union
+from typing import Union, List
 
 # Assurez-vous que le dossier logs existe
 import os
