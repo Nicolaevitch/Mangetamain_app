@@ -3,8 +3,8 @@ name = "webapp-recipe-analysis"
 version = "0.1.0"
 description = "Webapp for recipe analysis of Mangetamain company"
 authors = ["Robin Guiavarch <robin.guiavarch@gmail.com>"]
-license = "MIT"
 readme = "README.md"
+packages = [{ include = "app_v1" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
