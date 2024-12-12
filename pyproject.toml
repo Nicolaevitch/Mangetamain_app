@@ -33,3 +33,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+
+[tool.poetry.dependencies]
+nltk = "^3.8"
